@@ -219,6 +219,8 @@ export const en: Record<keyof typeof vi, string> = {
   listenDeckStart: '▶ Listen to {n} due cards (term → meaning)',
   listenNoDue: 'Nothing due to listen to.',
   listenBack: '← Back to list',
+  listenArchiveNote:
+    'VOA stopped publishing new stories in March 2025 (defunded) — this is the archive, still great listening-reading material.',
 
   // Sync (Supabase)
   syncTitle: 'Sync across devices',

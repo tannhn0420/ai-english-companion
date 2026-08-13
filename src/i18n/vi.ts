@@ -220,6 +220,8 @@ export const vi = {
   listenDeckStart: '▶ Nghe {n} thẻ đến hạn (từ → nghĩa)',
   listenNoDue: 'Không có thẻ đến hạn để nghe.',
   listenBack: '← Danh sách',
+  listenArchiveNote:
+    'VOA ngừng ra bài mới từ 3/2025 (bị cắt ngân sách) — đây là kho lưu trữ, vẫn rất tốt để luyện nghe-đọc.',
 
   // Sync (Supabase)
   syncTitle: 'Đồng bộ giữa các thiết bị',

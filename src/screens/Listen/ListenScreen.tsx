@@ -11,6 +11,7 @@ import {
   loadArticle,
   proxied,
   translateArticle,
+  VOA_PROGRAMS,
   type VoaArticle,
   type VoaFeedItem,
 } from '../../services/voa';
@@ -103,6 +104,7 @@ export default function ListenScreen() {
   const [source, setSource] = useState<Source>('voa');
 
   // VOA
+  const [program, setProgram] = useState(VOA_PROGRAMS[0]);
   const [feed, setFeed] = useState<VoaFeedItem[]>([]);
   const [saved, setSaved] = useState<VoaArticle[]>([]);
   const [feedErr, setFeedErr] = useState(false);
@@ -121,13 +123,19 @@ export default function ListenScreen() {
 
   useEffect(() => {
     void listArticles().then(setSaved);
-    fetchFeed()
-      .then(setFeed)
-      .catch(() => setFeedErr(true))
-      .finally(() => setLoadingFeed(false));
     void listPacks(10).then(setPacks);
     void getAllCards().then((deck) => setDueCount(getDueCards(deck, Date.now()).length));
   }, []);
+
+  useEffect(() => {
+    setLoadingFeed(true);
+    setFeedErr(false);
+    setFeed([]);
+    fetchFeed(program.url)
+      .then(setFeed)
+      .catch(() => setFeedErr(true))
+      .finally(() => setLoadingFeed(false));
+  }, [program]);
 
   async function openArticle(item: VoaFeedItem) {
     setLoadingArticle(true);
@@ -193,6 +201,20 @@ export default function ListenScreen() {
       {/* ---- VOA ---- */}
       {source === 'voa' && !article && (
         <>
+          <div className="chips">
+            {VOA_PROGRAMS.map((p) => (
+              <button
+                key={p.url}
+                className={`chip${program.url === p.url ? ' active' : ''}`}
+                onClick={() => setProgram(p)}
+              >
+                {p.name}
+              </button>
+            ))}
+          </div>
+          <p className="text-2" style={{ fontSize: 12, marginTop: 0 }}>
+            {t('listenArchiveNote')}
+          </p>
           {loadingFeed && <p className="text-2">{t('listenLoading')}</p>}
           {feedErr && <p className="text-2">{t('listenFeedErr')}</p>}
           {feed.map((it) => (

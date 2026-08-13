@@ -30,9 +30,24 @@ export function proxied(kind: 'page' | 'audio', url: string): string {
   return `/api/voa/${kind}?url=${encodeURIComponent(url)}`;
 }
 
-/** Danh sách bài mới từ RSS. Throw khi offline — caller fallback listArticles(). */
-export async function fetchFeed(): Promise<VoaFeedItem[]> {
-  const res = await fetch('/api/voa/feed');
+/**
+ * Các chương trình VOA Learning English. LƯU Ý: VOA ngừng sản xuất nội dung
+ * mới từ 3/2025 (bị cắt ngân sách) — đây là KHO LƯU TRỮ, vẫn là tài liệu học
+ * chất lượng (text + audio đọc chậm, public domain).
+ */
+export const VOA_PROGRAMS: { name: string; url: string }[] = [
+  { name: 'As It Is', url: 'https://learningenglish.voanews.com/api/zkm-ql-vomx-tpej-rqi' },
+  { name: 'All About America', url: 'https://learningenglish.voanews.com/api/zbmroml-vomx-tpeqboo_' },
+  { name: 'Arts & Culture', url: 'https://learningenglish.voanews.com/api/zpyp_l-vomx-tpe_rym' },
+  { name: 'Ask a Teacher', url: 'https://learningenglish.voanews.com/api/zti_qvl-vomx-tpekgvqr' },
+  { name: 'Everyday Grammar', url: 'https://learningenglish.voanews.com/api/zoroqql-vomx-tpeptpqq' },
+  { name: 'Podcast (30 phút)', url: 'https://learningenglish.voanews.com/podcast/?zoneId=1689&format=RSS' },
+];
+
+/** Danh sách bài từ RSS một chương trình. Throw khi offline — caller fallback listArticles(). */
+export async function fetchFeed(feedUrl?: string): Promise<VoaFeedItem[]> {
+  const url = feedUrl ? `/api/voa/feed?url=${encodeURIComponent(feedUrl)}` : '/api/voa/feed';
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`VOA feed: HTTP ${res.status}`);
   const xml = new DOMParser().parseFromString(await res.text(), 'text/xml');
   const items: VoaFeedItem[] = [];
@@ -71,11 +86,15 @@ export async function loadArticle(item: VoaFeedItem): Promise<VoaArticle> {
     if (t) paras.push(t);
   });
 
-  const audio =
-    item.audio ||
+  // VOA đặt src TRỰC TIẾP trên thẻ <audio> (không có <source> con);
+  // link download có đuôi ?download=1 — bỏ đi để cache/Range hoạt động sạch.
+  const rawAudio =
+    doc.querySelector('audio[src]')?.getAttribute('src') ||
     doc.querySelector('audio source')?.getAttribute('src') ||
     doc.querySelector('a[href*=".mp3"]')?.getAttribute('href') ||
+    item.audio ||
     undefined;
+  const audio = rawAudio ? rawAudio.replace(/\?download=1.*$/, '') : undefined;
 
   const article: VoaArticle = {
     url: item.link,

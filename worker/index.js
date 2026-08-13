@@ -9,9 +9,13 @@
 const FEED_DEFAULT =
   'https://learningenglish.voanews.com/podcast/?zoneId=1689&format=RSS';
 
-/** Chỉ proxy đến VOA — chặn mọi host khác (không thành open proxy). */
+/**
+ * Chỉ proxy đến VOA — chặn mọi host khác (không thành open proxy).
+ * LƯU Ý: audio của VOA nằm trên voa-audio.voanews.EU (không phải .com) —
+ * thiếu .eu là 403 toàn bộ MP3 (bug đã gặp 2026-08-13).
+ */
 function isAllowed(target) {
-  return /(^|\.)voanews\.com$/.test(target.hostname) && target.protocol === 'https:';
+  return /(^|\.)voanews\.(com|eu)$/.test(target.hostname) && target.protocol === 'https:';
 }
 
 async function proxy(targetUrl, request) {
@@ -23,7 +27,13 @@ async function proxy(targetUrl, request) {
   }
   if (!isAllowed(target)) return new Response('Host not allowed', { status: 403 });
 
-  const headers = { 'User-Agent': 'Mozilla/5.0 (AEC personal learning PWA)' };
+  // WAF của VOA trả 403 cho User-Agent lạ — giả trình duyệt đầy đủ.
+  const headers = {
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,audio/*;q=0.8,*/*;q=0.7',
+    'Accept-Language': 'en-US,en;q=0.9',
+  };
   const range = request.headers.get('range');
   if (range) headers.Range = range; // seek audio
 
