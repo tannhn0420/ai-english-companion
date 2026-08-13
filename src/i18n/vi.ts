@@ -227,6 +227,25 @@ export const vi = {
   listenPause: '⏸ Tạm dừng',
   listenNoAudio: 'Bài này không có audio.',
 
+  // Dictation (Phase 6)
+  dictQuickStart: 'Bắt đầu nhanh',
+  dictFromTatoeba: '🎲 10 câu Tatoeba',
+  dictFromPacks: 'Từ pack đã tạo',
+  dictFromVoa: 'Từ bài VOA đã lưu',
+  dictFromText: 'Dán văn bản của bạn',
+  dictTextPh: 'Dán đoạn text (mỗi câu sẽ thành một bài chép)…',
+  dictStart: 'Bắt đầu chép',
+  dictEmpty: 'Nguồn này không có câu nào.',
+  dictNoBundle: 'Chưa tải được kho câu — kiểm tra mạng rồi thử lại.',
+  dictReplay: 'Nghe lại',
+  dictModeTap: '👆 Chạm từ',
+  dictModeType: '⌨️ Gõ',
+  dictTypePh: 'Gõ lại câu bạn nghe được…',
+  dictTapHint: 'Chạm các từ theo đúng thứ tự nghe được',
+  dictFinish: 'Xong',
+  dictScore: 'Điểm trung bình: {n}/100',
+  dictSavedMistakes: 'Đã lưu {n} từ vào sổ tay lỗi để ôn lại.',
+
   // Sync (Supabase)
   syncTitle: 'Đồng bộ giữa các thiết bị',
   syncHint: 'Đăng nhập để sổ từ và tiến độ tự đồng bộ giữa máy tính và điện thoại. Không bắt buộc — chưa đăng nhập thì mọi thứ vẫn nằm trên máy này.',

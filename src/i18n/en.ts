@@ -226,6 +226,25 @@ export const en: Record<keyof typeof vi, string> = {
   listenPause: '⏸ Pause',
   listenNoAudio: 'This story has no audio.',
 
+  // Dictation (Phase 6)
+  dictQuickStart: 'Quick start',
+  dictFromTatoeba: '🎲 10 Tatoeba sentences',
+  dictFromPacks: 'From a generated pack',
+  dictFromVoa: 'From a saved VOA story',
+  dictFromText: 'Paste your own text',
+  dictTextPh: 'Paste text (each sentence becomes a dictation item)…',
+  dictStart: 'Start dictation',
+  dictEmpty: 'This source has no sentences.',
+  dictNoBundle: 'Sentence bundle not loaded — check your connection and retry.',
+  dictReplay: 'Replay',
+  dictModeTap: '👆 Tap words',
+  dictModeType: '⌨️ Type',
+  dictTypePh: 'Type what you hear…',
+  dictTapHint: 'Tap the words in the order you heard them',
+  dictFinish: 'Finish',
+  dictScore: 'Average score: {n}/100',
+  dictSavedMistakes: 'Saved {n} words to your mistake notebook for review.',
+
   // Sync (Supabase)
   syncTitle: 'Sync across devices',
   syncHint: 'Sign in to sync your wordbook and progress between computer and phone. Optional — without an account everything stays on this device.',

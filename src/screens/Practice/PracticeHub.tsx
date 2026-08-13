@@ -5,7 +5,7 @@ const MODES: { icon: string; label: MsgKey; phase?: string; to?: string }[] = [
   { icon: '🎙️', label: 'practiceTopic', to: '/practice/topic' },
   { icon: '🧪', label: 'practiceVocabTest', to: '/vocabtest' },
   { icon: '🎧', label: 'practiceListen', to: '/listen' },
-  { icon: '✍️', label: 'practiceDictation', phase: 'Phase 6' },
+  { icon: '✍️', label: 'practiceDictation', to: '/dictation' },
   { icon: '🗣️', label: 'practiceSpeaking', phase: 'Phase 7' },
   { icon: '📔', label: 'practiceJournal', phase: 'Phase 9' },
   { icon: '🎭', label: 'practiceMissions', phase: 'Phase 10' },

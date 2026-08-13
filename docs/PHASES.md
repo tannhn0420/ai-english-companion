@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🚧 M2 — Phase 4 + 5 code xong (AI Practice + Listen/VOA). Nợ lại từ Phase 8: Web Push + sync phía extension. Tiếp theo: Phase 6 — Dictation.**
+**Trạng thái hiện tại: 🎉 M2 xong (Phase 4–6: AI Practice + Listen/VOA + Dictation). Sổ tay lỗi (store D12) đã có dữ liệu từ dictation. Nợ lại từ Phase 8: Web Push + sync phía extension. Tiếp theo: M3 — Phase 7 (Speaking) hoặc M4 — Phase 9 (Viết + UI ôn lỗi).**
 
 ## Tổng quan Milestones
 
@@ -139,10 +139,10 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ## Phase 6 — Dictation Mobile (~2-3 buổi)
 
-- [ ] `core/dictation.ts`: port diff/chấm lỗi từng từ + unit tests.
-- [ ] Màn hình **Dictation**: nguồn = passage pack / bài VOA đã cache / câu Tatoeba theo band NGSL / AI sinh theo chủ đề / dán text; nghe từng câu → gõ lại → chấm, reveal hint dần, dịch VI toggle.
-- [ ] **Word-tap mode** (mới cho mobile): xáo từ của câu thành chip, chạm theo thứ tự.
-- [ ] Từ sai → ghi vào store `mistakes` (schema ARCHITECTURE §3.4, D12 — UI ôn lỗi làm ở Phase 9) + view weak words; lưu session + tiến độ vào `db.dictationSessions`; AI feedback cuối bài (port ASSESS prompt, 1 call cho cả bài).
+- [x] `core/dictation.ts`: chấm lỗi từng từ bằng căn chỉnh LCS (ok/wrong/missing/extra), scoreOf, isPerfect, wordTapChoices — 8 unit tests.
+- [x] Màn hình **Dictation** (`/dictation`): nguồn = pack passage / bài VOA đã lưu / 10 câu Tatoeba / dán text (AI-topic để dành); nghe từng câu (🔊 + 🐢 chậm) → gõ lại → chấm tô màu, hiện câu đúng, reveal, VI toggle, progress.
+- [x] **Word-tap mode**: xáo từ thành chip, chạm theo thứ tự (đỡ gõ trên mobile), chip tự ẩn khi dùng đủ.
+- [x] Từ sai → `core/mistakes.fromDictation` → store `mistakes` (D12) qua `services/mistakes` (dedupe + SRS-lite `reviewMistake`); phiên tính vào XP/streak; AI feedback cuối bài (tier `good`, 1 call). UI ôn lỗi để Phase 9.
 
 **Acceptance criteria:**
 - Làm 1 bài 5 câu trên điện thoại thuận tay; sai được chấm đúng vị trí từ.

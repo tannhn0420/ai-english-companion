@@ -193,6 +193,36 @@ export async function putDictEntry(entry: DictEntry): Promise<void> {
   await db.put('dict', entry);
 }
 
+// ---- Sổ tay lỗi (D12) ----
+
+export async function addMistakes(list: Mistake[]): Promise<void> {
+  if (list.length === 0) return;
+  const db = await getDb();
+  const tx = db.transaction('mistakes', 'readwrite');
+  for (const m of list) void tx.store.put(m);
+  await tx.done;
+}
+
+export async function getAllMistakes(): Promise<Mistake[]> {
+  const db = await getDb();
+  return db.getAll('mistakes');
+}
+
+export async function putMistake(m: Mistake): Promise<void> {
+  const db = await getDb();
+  await db.put('mistakes', m);
+}
+
+export async function deleteMistake(id: string): Promise<void> {
+  const db = await getDb();
+  await db.delete('mistakes', id);
+}
+
+export async function countMistakes(): Promise<number> {
+  const db = await getDb();
+  return db.count('mistakes');
+}
+
 // ---- Meta (key-value, giữ tên key như extension để phase sync map 1-1) ----
 
 export async function getMeta<T>(key: string, fallback: T): Promise<T> {
