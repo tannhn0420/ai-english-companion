@@ -49,9 +49,20 @@ export default function ReviewScreen() {
   countsRef.current = counts;
   const recordedRef = useRef(false);
 
-  // Swipe
-  const [dx, setDx] = useState(0);
-  const dragRef = useRef<{ startX: number; active: boolean }>({ startX: 0, active: false });
+  // Swipe kiểu Tinder — transform trực tiếp lên DOM (không re-render mỗi move)
+  const cardRef = useRef<HTMLDivElement>(null);
+  const stampGoodRef = useRef<HTMLSpanElement>(null);
+  const stampBadRef = useRef<HTMLSpanElement>(null);
+  const dragRef = useRef({
+    id: -1,
+    startX: 0,
+    dx: 0,
+    lastX: 0,
+    lastT: 0,
+    vel: 0, // px/ms — để nhận cú "hất" nhanh dù kéo chưa xa
+    moved: false,
+    busy: false, // đang animate bay ra — khóa input
+  });
 
   const finish = useCallback(() => {
     setPhase('done');
@@ -134,7 +145,6 @@ export default function ReviewScreen() {
       void putCard(updated); // ghi ngay — reload giữa phiên không mất tiến độ (AC)
       setCounts((c) => ({ ...c, [rating]: c[rating] + 1 }));
       setFlipped(false);
-      setDx(0);
       setQueue((q) => {
         const rest = q.slice(1);
         // Quên → gặp lại cuối phiên này
@@ -144,6 +154,54 @@ export default function ReviewScreen() {
       if (queue.length === 1 && rating !== 'again') finish();
     },
     [current, queue.length, finish],
+  );
+
+  // ---- Swipe helpers ----
+
+  const resetStamps = useCallback(() => {
+    if (stampGoodRef.current) stampGoodRef.current.style.opacity = '0';
+    if (stampBadRef.current) stampBadRef.current.style.opacity = '0';
+  }, []);
+
+  const springBack = useCallback(() => {
+    const el = cardRef.current;
+    if (el) {
+      el.style.transition = 'transform .18s ease-out';
+      el.style.transform = '';
+    }
+    resetStamps();
+    dragRef.current.dx = 0;
+  }, [resetStamps]);
+
+  /** Thẻ bay khỏi màn hình rồi mới chấm — cảm giác Tinder. */
+  const flyOut = useCallback(
+    (dir: 1 | -1) => {
+      const el = cardRef.current;
+      const d = dragRef.current;
+      if (!el || d.busy) return;
+      d.busy = true;
+      el.style.transition = 'transform .22s ease-out, opacity .22s ease-out';
+      el.style.transform = `translateX(${dir * (window.innerWidth || 480)}px) rotate(${dir * 18}deg)`;
+      el.style.opacity = '0';
+      setTimeout(() => {
+        rate(dir === 1 ? 'good' : 'again');
+        const next = cardRef.current;
+        if (next) {
+          // Thẻ kế vào nhẹ nhàng: scale .96 → 1
+          next.style.transition = 'none';
+          next.style.transform = 'scale(.96)';
+          next.style.opacity = '1';
+          requestAnimationFrame(() => {
+            next.style.transition = 'transform .18s ease-out';
+            next.style.transform = '';
+          });
+        }
+        resetStamps();
+        d.busy = false;
+        d.dx = 0;
+      }, 220);
+    },
+    [rate, resetStamps],
   );
 
   // Phím tắt kiểu Anki: Space lật, 1-4 chấm
@@ -296,32 +354,72 @@ export default function ReviewScreen() {
         </div>
 
         <div
+          ref={cardRef}
           className="fc"
-          style={{
-            transform: dx ? `translateX(${dx}px) rotate(${dx / 24}deg)` : undefined,
-            borderColor: dx > 40 ? 'var(--ok)' : dx < -40 ? 'var(--bad)' : undefined,
-            transition: dragRef.current.active ? 'none' : 'transform .15s',
+          onClick={() => {
+            const d = dragRef.current;
+            if (d.moved || d.busy) {
+              d.moved = false; // click "đuôi" sau một cú kéo — nuốt, không lật
+              return;
+            }
+            setFlipped((f) => !f);
           }}
-          onClick={() => !dragRef.current.active && setFlipped((f) => !f)}
           onPointerDown={(e) => {
-            if (!flipped) return;
-            dragRef.current = { startX: e.clientX, active: true };
+            const d = dragRef.current;
+            if (!flipped || d.busy) return;
+            d.id = e.pointerId;
+            d.startX = e.clientX;
+            d.lastX = e.clientX;
+            d.lastT = e.timeStamp;
+            d.vel = 0;
+            d.moved = false;
+            // Giữ pointer kể cả khi ngón tay rời khỏi thẻ — mấu chốt để mobile không đứt gesture
+            e.currentTarget.setPointerCapture(e.pointerId);
+            if (cardRef.current) cardRef.current.style.transition = 'none';
           }}
           onPointerMove={(e) => {
-            if (dragRef.current.active) setDx(e.clientX - dragRef.current.startX);
+            const d = dragRef.current;
+            if (d.id !== e.pointerId || d.busy) return;
+            const dx = e.clientX - d.startX;
+            const dt = e.timeStamp - d.lastT;
+            if (dt > 0) d.vel = (e.clientX - d.lastX) / dt;
+            d.lastX = e.clientX;
+            d.lastT = e.timeStamp;
+            d.dx = dx;
+            if (Math.abs(dx) > 8) d.moved = true;
+            const el = cardRef.current;
+            if (el) el.style.transform = `translateX(${dx}px) rotate(${dx / 22}deg)`;
+            const p = String(Math.min(1, Math.abs(dx) / 90));
+            if (stampGoodRef.current) stampGoodRef.current.style.opacity = dx > 0 ? p : '0';
+            if (stampBadRef.current) stampBadRef.current.style.opacity = dx < 0 ? p : '0';
           }}
-          onPointerUp={() => {
-            const d = dx;
-            dragRef.current.active = false;
-            setDx(0);
-            if (d > 70) rate('good');
-            else if (d < -70) rate('again');
+          onPointerUp={(e) => {
+            const d = dragRef.current;
+            if (d.id !== e.pointerId) return;
+            d.id = -1;
+            if (d.busy) return;
+            const width = cardRef.current?.offsetWidth ?? 320;
+            const threshold = Math.min(110, width * 0.32);
+            const flick =
+              Math.abs(d.vel) > 0.55 && Math.abs(d.dx) > 24 && Math.sign(d.vel) === Math.sign(d.dx);
+            if (Math.abs(d.dx) > threshold || flick) flyOut(d.dx > 0 ? 1 : -1);
+            else springBack();
           }}
           onPointerCancel={() => {
-            dragRef.current.active = false;
-            setDx(0);
+            dragRef.current.id = -1;
+            if (!dragRef.current.busy) springBack();
           }}
         >
+          {flipped && (
+            <>
+              <span ref={stampGoodRef} className="fc__stamp fc__stamp--good">
+                {t('rateGood').toUpperCase()} ✓
+              </span>
+              <span ref={stampBadRef} className="fc__stamp fc__stamp--bad">
+                {t('rateAgain').toUpperCase()} ✗
+              </span>
+            </>
+          )}
           <div className="fc__head">{current.term}</div>
           {current.ipa && <div className="fc__ipa">/{current.ipa}/</div>}
           <button

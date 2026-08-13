@@ -425,10 +425,40 @@ textarea.input {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 22px;
-  touch-action: pan-y;
+  /* Swipe kiểu Tinder: app sở hữu toàn bộ gesture trên thẻ (không cho browser cuộn) */
+  touch-action: none;
+  will-change: transform;
   user-select: none;
   -webkit-user-select: none;
   cursor: pointer;
+}
+
+/* Con dấu NHỚ/QUÊN hiện dần theo khoảng kéo (opacity set trực tiếp từ JS) */
+.fc__stamp {
+  position: absolute;
+  top: 18px;
+  padding: 2px 12px;
+  border: 3px solid;
+  border-radius: 8px;
+  font-weight: var(--w-display);
+  font-size: 20px;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fc__stamp--good {
+  left: 14px;
+  color: var(--ok);
+  border-color: var(--ok);
+  transform: rotate(-12deg);
+}
+
+.fc__stamp--bad {
+  right: 14px;
+  color: var(--bad);
+  border-color: var(--bad);
+  transform: rotate(12deg);
 }
 
 .fc__head {
