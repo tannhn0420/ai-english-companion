@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import MiniPlayer from './components/MiniPlayer';
 import TabBar from './components/TabBar';
 import { syncNow } from './services/sync';
 import DeckScreen from './screens/Deck/DeckScreen';
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="*" element={<ComingSoon titleKey="notFoundTitle" />} />
           </Routes>
         </main>
+        <MiniPlayer />
         <TabBar />
       </div>
     </BrowserRouter>

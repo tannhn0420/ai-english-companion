@@ -221,6 +221,10 @@ export const en: Record<keyof typeof vi, string> = {
   listenBack: '← Back to list',
   listenArchiveNote:
     'VOA stopped publishing new stories in March 2025 (defunded) — this is the archive, still great listening-reading material.',
+  listenPlayAll: '▶ Play all {n} stories',
+  listenPlayArticle: '▶ Play this story',
+  listenPause: '⏸ Pause',
+  listenNoAudio: 'This story has no audio.',
 
   // Sync (Supabase)
   syncTitle: 'Sync across devices',

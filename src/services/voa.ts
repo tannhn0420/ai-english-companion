@@ -127,4 +127,17 @@ export async function translateArticle(article: VoaArticle): Promise<VoaArticle>
   return updated;
 }
 
+/** Track cho global player: resolve MP3 lười (mở trang bài khi đến lượt phát). */
+export function trackFor(item: VoaFeedItem): import('./audioPlayer').Track {
+  return {
+    title: item.title,
+    link: item.link,
+    url: item.audio ? proxied('audio', item.audio) : undefined,
+    resolve: async () => {
+      const art = await loadArticle(item);
+      return art.audio ? proxied('audio', art.audio) : undefined;
+    },
+  };
+}
+
 export { listArticles };

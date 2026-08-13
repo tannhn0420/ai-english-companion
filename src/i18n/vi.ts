@@ -222,6 +222,10 @@ export const vi = {
   listenBack: '← Danh sách',
   listenArchiveNote:
     'VOA ngừng ra bài mới từ 3/2025 (bị cắt ngân sách) — đây là kho lưu trữ, vẫn rất tốt để luyện nghe-đọc.',
+  listenPlayAll: '▶ Phát liên tục cả {n} bài',
+  listenPlayArticle: '▶ Phát bài này',
+  listenPause: '⏸ Tạm dừng',
+  listenNoAudio: 'Bài này không có audio.',
 
   // Sync (Supabase)
   syncTitle: 'Đồng bộ giữa các thiết bị',

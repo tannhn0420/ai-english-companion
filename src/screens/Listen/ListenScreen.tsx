@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getDueCards } from '../../core/srs';
+import { activeSentence, estimateSentenceStarts } from '../../core/transcript';
 import type { PracticePack } from '../../core/types';
 import { hasAiKey } from '../../services/ai/client';
+import { playQueue, seek, toggle, usePlayer } from '../../services/audioPlayer';
 import { getAllCards, listPacks, type PackEntry } from '../../services/db';
 import { createPlaylist, type PlayItem, type PlaylistMode } from '../../services/playlist';
 import { speak } from '../../services/tts';
@@ -9,8 +11,8 @@ import {
   fetchFeed,
   listArticles,
   loadArticle,
-  proxied,
   translateArticle,
+  trackFor,
   VOA_PROGRAMS,
   type VoaArticle,
   type VoaFeedItem,
@@ -20,7 +22,7 @@ import { useI18n, type MsgKey } from '../../i18n';
 type Source = 'voa' | 'packs' | 'deck';
 const GAPS = [600, 1200, 2500];
 
-/** Player TTS dùng chung cho Packs + Deck. */
+/** Player TTS (SpeechSynthesis) dùng cho Packs + Deck — không có file audio thật. */
 function TtsPlayer({ items, title }: { items: PlayItem[]; title: string }) {
   const { t } = useI18n();
   const [mode, setMode] = useState<PlaylistMode>('en-vi');
@@ -30,13 +32,7 @@ function TtsPlayer({ items, title }: { items: PlayItem[]; title: string }) {
   const plRef = useRef<ReturnType<typeof createPlaylist> | null>(null);
 
   useEffect(() => {
-    const pl = createPlaylist(items, {
-      mode,
-      gapMs: gap,
-      title,
-      onIndex: setIdx,
-      onState: setPlaying,
-    });
+    const pl = createPlaylist(items, { mode, gapMs: gap, title, onIndex: setIdx, onState: setPlaying });
     plRef.current = pl;
     return () => pl.stop();
   }, [items, mode, gap, title]);
@@ -50,10 +46,7 @@ function TtsPlayer({ items, title }: { items: PlayItem[]; title: string }) {
         <button className={`chip${mode === 'en' ? ' active' : ''}`} onClick={() => setMode('en')}>
           {t('listenModeEn')}
         </button>
-        <button
-          className={`chip${mode === 'en-vi' ? ' active' : ''}`}
-          onClick={() => setMode('en-vi')}
-        >
+        <button className={`chip${mode === 'en-vi' ? ' active' : ''}`} onClick={() => setMode('en-vi')}>
           {t('listenModeEnVi')}
         </button>
         <select
@@ -96,6 +89,87 @@ function TtsPlayer({ items, title }: { items: PlayItem[]; title: string }) {
         </button>
       </div>
     </div>
+  );
+}
+
+/** Bài VOA: audio thật + transcript chạy theo (karaoke, chạm câu để tua). */
+function VoaArticleView({
+  article,
+  onBack,
+  onTranslate,
+  translating,
+}: {
+  article: VoaArticle;
+  onBack: () => void;
+  onTranslate: () => void;
+  translating: boolean;
+}) {
+  const { t } = useI18n();
+  const player = usePlayer();
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const isThis = player.queue[player.index]?.link === article.url;
+  const starts = useMemo(
+    () => (isThis ? estimateSentenceStarts(article.sentences, player.duration) : []),
+    [isThis, article.sentences, player.duration],
+  );
+  const active = isThis && player.duration > 0 ? activeSentence(starts, player.time) : -1;
+
+  // Tự cuộn câu đang phát vào giữa màn hình
+  useEffect(() => {
+    if (active < 0) return;
+    listRef.current?.children[active]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [active]);
+
+  return (
+    <>
+      <button className="btn" onClick={onBack}>
+        {t('listenBack')}
+      </button>
+      <h2 style={{ marginTop: 12 }}>{article.title}</h2>
+      <p className="fc__src" style={{ marginTop: 0 }}>
+        {t('listenCredit')}
+      </p>
+
+      <div className="row" style={{ marginBottom: 10 }}>
+        {article.audio ? (
+          <button
+            className="btn-primary"
+            style={{ flex: 1 }}
+            onClick={() => (isThis ? toggle() : playQueue([trackFor({ title: article.title, link: article.url, audio: article.audio })]))}
+          >
+            {isThis && player.playing ? t('listenPause') : t('listenPlayArticle')}
+          </button>
+        ) : (
+          <span className="text-2">{t('listenNoAudio')}</span>
+        )}
+        {hasAiKey() && !article.vi && (
+          <button className="btn" onClick={onTranslate} disabled={translating}>
+            {translating ? t('listenTranslating') : t('listenTranslate')}
+          </button>
+        )}
+      </div>
+
+      <div ref={listRef}>
+        {article.sentences.map((s, i) => (
+          <p
+            key={i}
+            className={`sent${i === active ? ' sent--on' : ''}`}
+            onClick={() => {
+              if (isThis && starts[i] != null) seek(starts[i] + 0.05);
+              else speak(s, 'en');
+            }}
+          >
+            {s}
+            {article.vi?.[i] && (
+              <span className="text-2" style={{ display: 'block', fontSize: 14 }}>
+                {article.vi[i]}
+              </span>
+            )}
+          </p>
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -182,11 +256,7 @@ export default function ListenScreen() {
             ['deck', 'listenDeck'],
           ] as [Source, MsgKey][]
         ).map(([k, label]) => (
-          <button
-            key={k}
-            className={`chip${source === k ? ' active' : ''}`}
-            onClick={() => setSource(k)}
-          >
+          <button key={k} className={`chip${source === k ? ' active' : ''}`} onClick={() => setSource(k)}>
             {t(label)}
           </button>
         ))}
@@ -215,19 +285,41 @@ export default function ListenScreen() {
           <p className="text-2" style={{ fontSize: 12, marginTop: 0 }}>
             {t('listenArchiveNote')}
           </p>
+
+          {feed.length > 0 && (
+            <button
+              className="btn-primary"
+              style={{ marginBottom: 12 }}
+              onClick={() => playQueue(feed.map(trackFor))}
+            >
+              {t('listenPlayAll', { n: feed.length })}
+            </button>
+          )}
+
           {loadingFeed && <p className="text-2">{t('listenLoading')}</p>}
           {feedErr && <p className="text-2">{t('listenFeedErr')}</p>}
           {feed.map((it) => (
-            <button key={it.link} className="deck-row" onClick={() => void openArticle(it)}>
-              <span aria-hidden>{it.audio ? '🎧' : '📄'}</span>
-              <span className="deck-row__main">
+            <div key={it.link} className="deck-row">
+              <button
+                onClick={() => playQueue([trackFor(it)])}
+                aria-label={t('listenPlayArticle')}
+                style={{ minHeight: 'auto' }}
+              >
+                {it.audio ? '▶' : '📄'}
+              </button>
+              <button
+                className="deck-row__main"
+                style={{ minHeight: 'auto', background: 'none' }}
+                onClick={() => void openArticle(it)}
+              >
                 <span className="deck-row__term">{it.title}</span>
                 {it.pubDate && (
                   <div className="deck-row__meaning">{new Date(it.pubDate).toLocaleDateString()}</div>
                 )}
-              </span>
-            </button>
+              </button>
+            </div>
           ))}
+
           {saved.length > 0 && (
             <>
               <h3 style={{ marginTop: 16 }}>{t('listenSaved')}</h3>
@@ -250,44 +342,12 @@ export default function ListenScreen() {
       )}
 
       {source === 'voa' && article && (
-        <>
-          <button className="btn" onClick={() => setArticle(null)}>
-            {t('listenBack')}
-          </button>
-          <h2 style={{ marginTop: 12 }}>{article.title}</h2>
-          <p className="fc__src" style={{ marginTop: 0 }}>
-            {t('listenCredit')}
-          </p>
-          {article.audio && (
-            <audio
-              controls
-              preload="none"
-              src={proxied('audio', article.audio)}
-              style={{ width: '100%', margin: '8px 0 12px' }}
-            />
-          )}
-          {hasAiKey() && !article.vi && (
-            <button className="btn" onClick={() => void translate()} disabled={translating}>
-              {translating ? t('listenTranslating') : t('listenTranslate')}
-            </button>
-          )}
-          <div style={{ marginTop: 10 }}>
-            {article.sentences.map((s, i) => (
-              <p
-                key={i}
-                onClick={() => speak(s, 'en')}
-                style={{ cursor: 'pointer', margin: '0 0 10px' }}
-              >
-                {s}
-                {article.vi?.[i] && (
-                  <span className="text-2" style={{ display: 'block', fontSize: 14 }}>
-                    {article.vi[i]}
-                  </span>
-                )}
-              </p>
-            ))}
-          </div>
-        </>
+        <VoaArticleView
+          article={article}
+          onBack={() => setArticle(null)}
+          onTranslate={() => void translate()}
+          translating={translating}
+        />
       )}
 
       {/* ---- Packs ---- */}

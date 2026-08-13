@@ -582,6 +582,82 @@ textarea.input {
   font-weight: var(--w-em);
 }
 
+/* ===== Mini player (nổi trên TabBar, toàn cục) ===== */
+
+.miniplayer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  max-width: var(--content-max);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: var(--shadow);
+  z-index: 12;
+}
+
+.miniplayer__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--bg-2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.miniplayer__bar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.miniplayer__title {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  padding: 0 6px;
+}
+
+.miniplayer__title span {
+  display: block;
+  font-weight: var(--w-em);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.miniplayer__title small {
+  font-size: 11px;
+}
+
+@media (min-width: 768px) {
+  .miniplayer {
+    left: var(--rail-w);
+    bottom: 0;
+  }
+}
+
+/* Câu transcript đang phát (karaoke) */
+.sent {
+  cursor: pointer;
+  margin: 0 0 10px;
+  border-radius: var(--radius-s);
+  padding: 2px 6px;
+}
+
+.sent--on {
+  background: var(--hl);
+}
+
 /* ===== Progress ===== */
 
 .xpbar {
