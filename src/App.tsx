@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import TabBar from './components/TabBar';
+import DeckScreen from './screens/Deck/DeckScreen';
 import HomeScreen from './screens/Home/HomeScreen';
 import StudyHub from './screens/Study/StudyHub';
 import PracticeHub from './screens/Practice/PracticeHub';
@@ -14,6 +15,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomeScreen />} />
             <Route path="/study" element={<StudyHub />} />
+            <Route path="/deck" element={<DeckScreen />} />
             <Route path="/practice" element={<PracticeHub />} />
             <Route path="/settings" element={<SettingsScreen />} />
             {/* Đích của manifest shortcuts — thành màn thật ở Phase 2 */}

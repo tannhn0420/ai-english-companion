@@ -28,8 +28,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // App shell precache; bundle data (public/data/) sẽ có chiến lược riêng ở Phase 1.
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // App shell + bundle data mở (DATA.md §3) — precache nền, offline tra được từ/câu.
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}', 'data/**/*.json'],
         navigateFallback: '/index.html',
       },
     }),

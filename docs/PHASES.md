@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: ✅ Phase 0 xong (đã deploy Cloudflare). Tiếp theo: Phase 1 — Data Core & Deck.**
+**Trạng thái hiện tại: 🚧 Phase 1 — code xong, chờ AC test tay: import file export thật từ extension trên URL live + import ngược vào extension.**
 
 ## Tổng quan Milestones
 
@@ -45,16 +45,16 @@ Mục tiêu: khung app chạy được, cài được lên điện thoại, có 
 
 Mục tiêu: dữ liệu vào được app — import từ extension, quản lý deck.
 
-- [ ] `core/types.ts` (copy từ extension) + `services/db.ts` (idb, schema §3.2 ARCHITECTURE).
-- [ ] `core/importExport.ts`: parse JSON (export extension), CSV, TSV; serialize cả 3; dedupe `lang+term`.
-  - [ ] Unit tests: file export thật từ extension, file thiếu field SRS, file rác.
-- [ ] `scripts/data/`: pipeline build bundle nguồn mở → `public/data/v1/` (ngsl.json, ipa-core.json, sentences-core.json — spec DATA.md §3) + loader trong `services/`.
-- [ ] Thêm thẻ mới auto-fill: nghĩa/IPA/audio người thật từ bundle + dictionaryapi.dev (cache vào store `dict`, DATA.md §4); AI chỉ là fallback.
-- [ ] Màn hình **Deck**: danh sách thẻ (virtualized nếu > 200), tìm kiếm, lọc theo topic, thêm/sửa/xóa thẻ.
-- [ ] Import UI (file picker + kéo thả trên desktop) → báo kết quả `added/skipped`.
-- [ ] Export UI (JSON/CSV/Anki TSV) — tải file về.
-- [ ] `services/settings.ts` + màn hình Settings tối thiểu: theme, TTS voice + rate (danh sách voice load async), nút backup/restore.
-- [ ] `services/tts.ts` port `pickVoice` — nút 🔊 trên mỗi thẻ.
+- [x] `core/types.ts` (copy từ extension) + `services/db.ts` (idb v1, đủ 7 store §3.2).
+- [x] `core/importExport.ts`: parse JSON (export extension), CSV, TSV; serialize cả 3; dedupe `lang+term`.
+  - [x] Unit tests (17): shape export extension, roundtrip, thiếu field SRS, file rác, dedupe.
+- [x] `scripts/data/`: pipeline → `public/data/v1/` (ngsl 2801 từ + 5680 biến thể · ipa-core 7969 · sentences-core 3823 câu EN-VI ≈ 215KB gz) + loader `services/dataBundle.ts`; SW precache để offline.
+- [x] Thêm thẻ auto-fill: IPA/audio người thật/ví dụ từ bundle + dictionaryapi.dev (cache store `dict`); nghĩa VI user nhập (AI fallback ở Phase 4).
+- [x] Màn hình **Deck**: danh sách (content-visibility cho deck lớn), tìm kiếm, lọc topic, thêm/sửa/xóa qua bottom sheet.
+- [x] Import UI (file picker + kéo thả desktop) → toast `added/skipped`.
+- [x] Export UI (JSON/CSV/Anki TSV).
+- [x] `services/settings.ts` + Settings: TTS voice EN/VI + rate + nghe thử, backup/restore/xóa hết, mục "Nguồn dữ liệu & ghi công" (R8).
+- [x] `services/tts.ts` port `pickVoice` — nút 🔊 trên thẻ + trong form.
 
 **Acceptance criteria:**
 - Import file JSON export từ extension: đủ 100% thẻ, mọi field giữ nguyên (kiểm bằng export lại và diff).
