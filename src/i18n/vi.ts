@@ -93,6 +93,38 @@ export const vi = {
   settingsCredits: 'Nguồn dữ liệu & ghi công',
   settingsCreditsIntro: 'App dùng các nguồn dữ liệu mở sau — xin cảm ơn cộng đồng:',
 
+  // Review session
+  reviewSetupDue: 'Đến hạn ({n})',
+  reviewSetupAll: 'Ngẫu nhiên',
+  reviewStart: 'Bắt đầu',
+  reviewNothingDue: 'Không có thẻ đến hạn — chọn Ngẫu nhiên, hoặc quay lại sau.',
+  reviewFlipHint: 'Chạm để lật · vuốt phải = Nhớ, trái = Quên',
+  reviewAutoSpeak: 'Tự đọc từ',
+  rateAgain: 'Quên',
+  rateHard: 'Khó',
+  rateGood: 'Nhớ',
+  rateEasy: 'Dễ',
+  summaryReviewed: 'Đã ôn {n} lượt thẻ',
+  summaryContinue: 'Ôn tiếp',
+  summaryHome: 'Về Home',
+  homeTwoMin: '⚡ Ôn 2 phút',
+
+  // Quiz / Cloze
+  quizModeMcq: 'Trắc nghiệm',
+  quizModeCloze: 'Điền từ (cloze)',
+  quizSourceDue: 'Thẻ đến hạn',
+  quizSourceAll: 'Cả sổ từ',
+  quizNotEnough: 'Cần ít nhất 4 thẻ để tạo quiz — thêm từ vào sổ đã nhé.',
+  quizScore: 'Đúng {right}/{total}',
+  clozeYourAnswer: 'Gõ từ còn thiếu…',
+  clozeCheck: 'Kiểm tra',
+  clozeHint: 'Gợi ý',
+  clozeReveal: 'Hiện đáp án',
+  clozeSourceContext: 'Câu bạn từng gặp',
+  clozeSourceExample: 'Ví dụ của thẻ',
+  clozeSourceTatoeba: 'Tatoeba (CC-BY)',
+  next: 'Tiếp',
+
   // Toasts
   toastSaved: 'Đã lưu',
   toastDeleted: 'Đã xóa',

@@ -4,6 +4,8 @@ import DeckScreen from './screens/Deck/DeckScreen';
 import HomeScreen from './screens/Home/HomeScreen';
 import StudyHub from './screens/Study/StudyHub';
 import PracticeHub from './screens/Practice/PracticeHub';
+import QuizScreen from './screens/Quiz/QuizScreen';
+import ReviewScreen from './screens/Review/ReviewScreen';
 import SettingsScreen from './screens/Settings/SettingsScreen';
 import ComingSoon from './screens/ComingSoon';
 
@@ -18,9 +20,8 @@ export default function App() {
             <Route path="/deck" element={<DeckScreen />} />
             <Route path="/practice" element={<PracticeHub />} />
             <Route path="/settings" element={<SettingsScreen />} />
-            {/* Đích của manifest shortcuts — thành màn thật ở Phase 2 */}
-            <Route path="/review" element={<ComingSoon titleKey="soonReview" phase="Phase 2" />} />
-            <Route path="/quiz" element={<ComingSoon titleKey="soonQuiz" phase="Phase 2" />} />
+            <Route path="/review" element={<ReviewScreen />} />
+            <Route path="/quiz" element={<QuizScreen />} />
             <Route path="*" element={<ComingSoon titleKey="notFoundTitle" />} />
           </Routes>
         </main>

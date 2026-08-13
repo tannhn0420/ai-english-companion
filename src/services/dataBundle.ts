@@ -33,6 +33,7 @@ async function fetchJson<T>(path: string): Promise<T | null> {
 let ngslP: Promise<NgslBundle | null> | undefined;
 let ipaP: Promise<Record<string, string> | null> | undefined;
 let manifestP: Promise<BundleManifest | null> | undefined;
+let sentenceDepsP: Promise<import('../core/cloze').SentenceDeps | null> | undefined;
 
 export function getNgsl(): Promise<NgslBundle | null> {
   ngslP ??= fetchJson<NgslBundle>('ngsl.json');
@@ -51,6 +52,24 @@ export async function ipaFor(term: string): Promise<string | null> {
   if (!map) return null;
   const key = term.trim().toLowerCase();
   return map[key] ?? null;
+}
+
+/** Câu Tatoeba + index headword→câu, sẵn cho core/cloze (build 1 lần, ~4k câu). */
+export function getSentenceDeps(): Promise<import('../core/cloze').SentenceDeps | null> {
+  sentenceDepsP ??= (async () => {
+    const [pairs, ngsl, { buildSentenceIndex }] = await Promise.all([
+      fetchJson<import('../core/cloze').SentencePair[]>('sentences-core.json'),
+      getNgsl(),
+      import('../core/cloze'),
+    ]);
+    if (!pairs || !ngsl) return null;
+    return {
+      pairs,
+      variants: ngsl.variants,
+      index: buildSentenceIndex(pairs, ngsl.variants, ngsl.words),
+    };
+  })();
+  return sentenceDepsP;
 }
 
 /** Band NGSL của một từ (1–3), null nếu ngoài danh sách lõi. */

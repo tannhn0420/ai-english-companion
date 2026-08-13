@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🚧 Phase 1 — code xong, chờ AC test tay: import file export thật từ extension trên URL live + import ngược vào extension.**
+**Trạng thái hiện tại: 🚧 Phase 2 — code xong (Review FSRS + Quiz/Cloze). Chờ AC test tay của Phase 1 (round-trip file với extension) + Phase 2 (ôn 10 thẻ offline trên điện thoại). Tiếp theo: Phase 3 — Gamification.**
 
 ## Tổng quan Milestones
 
@@ -66,15 +66,15 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ## Phase 2 — Review MVP: SRS + Quiz + Cloze (~3 buổi) ⭐ giá trị cốt lõi
 
-- [ ] `core/srs.ts`: FSRS qua `ts-fsrs` (schedule, getDueCards) + migration thẻ SM-2 import từ extension (map interval/ease/reps → stability/difficulty) + unit tests (4 rating, lapse, thẻ SM-2 cũ).
-- [ ] Màn hình **Review**: thẻ lật (term → meaning/IPA/example/ảnh), 4 nút rating + **swipe** (trái = again, phải = good), progress bar phiên, TTS tự đọc term (bật/tắt).
-- [ ] Chế độ chọn nguồn: Đến hạn / Tất cả / Theo topic (như `ReviewMode` extension).
-- [ ] `core/quiz.ts` + `core/cloze.ts` port từ FlashcardsApp (tách khỏi component, unit tests).
-- [ ] Cloze ưu tiên nguồn câu theo thứ tự: (1) `context` cá nhân của thẻ → (2) câu Tatoeba trong bundle chứa từ đó → (3) `example`. Hiện xuất xứ câu ("Bạn gặp từ này tại…" / link Tatoeba theo DATA.md §6).
-- [ ] Desktop: phím tắt kiểu Anki (Space lật, 1–4 chấm điểm).
-- [ ] Chế độ **"Ôn 2 phút"** trên Home: phiên đếm ngược, tự kết thúc bằng summary.
-- [ ] Màn hình **Quiz**: MCQ 4 lựa chọn + cloze gõ đáp án; kết quả cuối phiên; sai → ghi nhận (giảm SRS hoặc thêm weak words).
-- [ ] Màn hình **Home** bản đầu: số từ đến hạn hôm nay, nút "Ôn ngay" (1 chạm vào Review), streak placeholder.
+- [x] `core/srs.ts`: FSRS qua `ts-fsrs` 5.4 (schedule, previewGaps, getDueCards) + migration SM-2 `fromSm2` (interval/ease → stability/difficulty, giữ nguyên due) + 10 unit tests (4 rating, lapse, deterministic, không reset tiến độ).
+- [x] Màn hình **Review**: thẻ kiểu mục từ điển (D14), lật, 4 nút rating kèm khoảng chờ ("10p/3ng…") + **swipe** (phải = Nhớ, trái = Quên), progress bar, TTS tự đọc (bật/tắt), thẻ Quên gặp lại cuối phiên; rating ghi DB ngay → reload không mất tiến độ.
+- [x] Chế độ chọn nguồn: Đến hạn / Ngẫu nhiên / lọc topic.
+- [x] `core/quiz.ts` + `core/cloze.ts` thuần, rng là tham số + 11 unit tests.
+- [x] Cloze ưu tiên: `context` cá nhân → câu Tatoeba (index 3823 câu, kèm VI + link attribution #id) → `example`; hiện xuất xứ câu.
+- [x] Desktop: phím tắt kiểu Anki (Space lật, 1–4 chấm điểm).
+- [x] **"Ôn 2 phút"** trên Home: `/review?t=2m` tự bắt đầu, đếm ngược, tự kết thúc bằng summary.
+- [x] Màn hình **Quiz**: MCQ 4 lựa chọn (tự chuyển sau 900ms) + cloze gõ đáp án (gợi ý chữ đầu / hiện đáp án); sai → weak words (store `meta`); summary cuối phiên.
+- [x] Home: due count thật, "Ôn ngay" 1 chạm, streak placeholder (Phase 3).
 
 **Acceptance criteria:**
 - Ôn 10 thẻ đến hạn hoàn toàn offline < 2 phút, một tay trên điện thoại.

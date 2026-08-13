@@ -8,6 +8,7 @@ export interface AppSettings {
   ttsVoiceVi: string;
   ttsRate: number;
   dailyGoal: number; // số thẻ mục tiêu/ngày (dùng từ Phase 3)
+  reviewAutoSpeak: boolean; // tự đọc term khi hiện thẻ mới trong phiên ôn
 }
 
 const KEY = 'aec-settings';
@@ -17,6 +18,7 @@ const DEFAULTS: AppSettings = {
   ttsVoiceVi: '',
   ttsRate: 0.95,
   dailyGoal: 10,
+  reviewAutoSpeak: true,
 };
 
 export function getSettings(): AppSettings {

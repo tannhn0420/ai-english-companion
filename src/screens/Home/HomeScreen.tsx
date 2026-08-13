@@ -62,6 +62,15 @@ export default function HomeScreen() {
             <Link to="/review" className="btn-primary">
               {t('homeReviewNow')}
             </Link>
+            {due > 0 && (
+              <Link
+                to="/review?t=2m"
+                className="btn"
+                style={{ display: 'block', textAlign: 'center', marginTop: 8 }}
+              >
+                {t('homeTwoMin')}
+              </Link>
+            )}
           </>
         )}
       </div>

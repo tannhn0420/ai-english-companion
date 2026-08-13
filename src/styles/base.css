@@ -353,6 +353,205 @@ textarea.input {
   white-space: nowrap;
 }
 
+/* ===== Phiên học (Review/Quiz) — fullscreen, ẩn TabBar (DESIGN §3) ===== */
+
+.session-full {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  background: var(--bg);
+  overflow: auto;
+  padding: 16px;
+}
+
+.session-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.session-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.session-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.session-bar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.2s;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.chip {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-2);
+  font-weight: var(--w-em);
+  font-size: 14px;
+}
+
+.chip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ===== Flashcard = mục từ điển (D14) ===== */
+
+.fc {
+  position: relative;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.fc__head {
+  font-size: var(--fs-headword);
+  font-weight: var(--w-display);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.fc__ipa {
+  color: var(--text-2);
+  margin-top: 6px;
+}
+
+.fc__meaning {
+  font-size: 20px;
+  font-weight: var(--w-em);
+  margin-top: 6px;
+}
+
+.fc__example {
+  color: var(--text-2);
+  margin-top: 12px;
+}
+
+.fc__img {
+  max-height: 120px;
+  max-width: 100%;
+  border-radius: var(--radius-s);
+  margin: 12px auto 0;
+}
+
+.fc__src {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 14px;
+}
+
+.fc__hint {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.rate-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.rate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--bg-2);
+  font-weight: var(--w-em);
+}
+
+.rate small {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.rate--again {
+  color: var(--bad);
+}
+.rate--hard {
+  color: var(--warn);
+}
+.rate--good {
+  color: var(--ok);
+}
+.rate--easy {
+  color: var(--accent);
+}
+
+/* ===== Quiz ===== */
+
+.opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 14px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--bg-2);
+  font-weight: var(--w-em);
+}
+
+.opt--right {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.opt--wrong {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.cloze-sentence {
+  font-size: 19px;
+  line-height: 1.6;
+}
+
+.cloze-blank {
+  display: inline-block;
+  min-width: 72px;
+  border-bottom: 2px solid var(--accent);
+  text-align: center;
+  font-weight: var(--w-em);
+}
+
 .hero-line {
   font-size: var(--fs-hero);
   font-weight: var(--w-display);

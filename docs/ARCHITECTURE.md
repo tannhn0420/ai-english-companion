@@ -121,6 +121,9 @@ interface VocabCard {
   updatedAt?: number;    // phục vụ sync last-write-wins ở Phase 8; default = createdAt khi import
   stability?: number;    // FSRS state — khởi tạo từ interval/ease/reps khi import thẻ SM-2
   difficulty?: number;   // FSRS state
+  fsrsState?: number;    // ts-fsrs State (0 New / 1 Learning / 2 Review / 3 Relearning)
+  lastReview?: number;   // timestamp lần ôn gần nhất
+  learningSteps?: number; // vị trí trong learning steps của ts-fsrs
 }
 ```
 

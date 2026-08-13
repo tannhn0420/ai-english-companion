@@ -28,8 +28,11 @@ export interface VocabCard {
   lapses: number;
   // Chỉ web app (optional — không phá tương thích):
   updatedAt?: number; // sync last-write-wins ở Phase 8
-  stability?: number; // FSRS state (Phase 2)
-  difficulty?: number; // FSRS state (Phase 2)
+  stability?: number; // FSRS state
+  difficulty?: number; // FSRS state
+  fsrsState?: number; // ts-fsrs State enum (0 New, 1 Learning, 2 Review, 3 Relearning)
+  lastReview?: number; // timestamp lần ôn gần nhất
+  learningSteps?: number; // vị trí trong learning steps của ts-fsrs
 }
 
 /** Input tạo thẻ mới (field SRS do core/srs điền). */

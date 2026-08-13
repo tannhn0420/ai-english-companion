@@ -92,6 +92,38 @@ export const en: Record<keyof typeof vi, string> = {
   settingsCredits: 'Data sources & credits',
   settingsCreditsIntro: 'This app is built on these open data sources — thank you:',
 
+  // Review session
+  reviewSetupDue: 'Due ({n})',
+  reviewSetupAll: 'Random',
+  reviewStart: 'Start',
+  reviewNothingDue: 'Nothing due — pick Random, or come back later.',
+  reviewFlipHint: 'Tap to flip · swipe right = Got it, left = Forgot',
+  reviewAutoSpeak: 'Auto-pronounce',
+  rateAgain: 'Forgot',
+  rateHard: 'Hard',
+  rateGood: 'Got it',
+  rateEasy: 'Easy',
+  summaryReviewed: 'Reviewed {n} cards',
+  summaryContinue: 'Keep going',
+  summaryHome: 'Back to Home',
+  homeTwoMin: '⚡ 2-minute review',
+
+  // Quiz / Cloze
+  quizModeMcq: 'Multiple choice',
+  quizModeCloze: 'Fill the blank (cloze)',
+  quizSourceDue: 'Due cards',
+  quizSourceAll: 'Whole wordbook',
+  quizNotEnough: 'You need at least 4 cards for a quiz — add some words first.',
+  quizScore: '{right}/{total} correct',
+  clozeYourAnswer: 'Type the missing word…',
+  clozeCheck: 'Check',
+  clozeHint: 'Hint',
+  clozeReveal: 'Show answer',
+  clozeSourceContext: 'A sentence you met',
+  clozeSourceExample: "This card's example",
+  clozeSourceTatoeba: 'Tatoeba (CC-BY)',
+  next: 'Next',
+
   // Toasts
   toastSaved: 'Saved',
   toastDeleted: 'Deleted',
