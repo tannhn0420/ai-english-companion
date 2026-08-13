@@ -11,6 +11,7 @@ import {
   fetchFeed,
   listArticles,
   loadArticle,
+  transcribeArticle,
   translateArticle,
   trackFor,
   VOA_PROGRAMS,
@@ -98,15 +99,20 @@ function VoaArticleView({
   onBack,
   onTranslate,
   translating,
+  onTranscribe,
+  transcribing,
 }: {
   article: VoaArticle;
   onBack: () => void;
   onTranslate: () => void;
   translating: boolean;
+  onTranscribe: () => void;
+  transcribing: boolean;
 }) {
   const { t } = useI18n();
   const player = usePlayer();
   const listRef = useRef<HTMLDivElement>(null);
+  const noTranscript = article.sentences.length === 0;
 
   const isThis = player.queue[player.index]?.link === article.url;
   const starts = useMemo(
@@ -143,12 +149,29 @@ function VoaArticleView({
         ) : (
           <span className="text-2">{t('listenNoAudio')}</span>
         )}
-        {hasAiKey() && !article.vi && (
+        {hasAiKey() && !noTranscript && !article.vi && (
           <button className="btn" onClick={onTranslate} disabled={translating}>
             {translating ? t('listenTranslating') : t('listenTranslate')}
           </button>
         )}
       </div>
+
+      {noTranscript && (
+        <div className="card" style={{ marginBottom: 10, textAlign: 'center' }}>
+          <p className="text-2" style={{ marginTop: 0 }}>
+            {t('listenNoTranscript')}
+          </p>
+          {hasAiKey() ? (
+            <button className="btn-primary" onClick={onTranscribe} disabled={transcribing}>
+              {transcribing ? t('listenTranscribing') : t('listenTranscribe')}
+            </button>
+          ) : (
+            <p className="text-2" style={{ fontSize: 13 }}>
+              {t('practiceNeedKey')} <a href="/settings">{t('tabSettings')} →</a>
+            </p>
+          )}
+        </div>
+      )}
 
       <div ref={listRef}>
         {article.sentences.map((s, i) => (
@@ -186,6 +209,7 @@ export default function ListenScreen() {
   const [article, setArticle] = useState<VoaArticle | null>(null);
   const [loadingArticle, setLoadingArticle] = useState(false);
   const [translating, setTranslating] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const [msg, setMsg] = useState('');
 
   // Packs / Deck
@@ -234,6 +258,20 @@ export default function ListenScreen() {
       setMsg(e instanceof Error ? e.message : String(e));
     } finally {
       setTranslating(false);
+    }
+  }
+
+  async function transcribe() {
+    if (!article) return;
+    setTranscribing(true);
+    setMsg('');
+    try {
+      setArticle(await transcribeArticle(article));
+      void listArticles().then(setSaved);
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : String(e));
+    } finally {
+      setTranscribing(false);
     }
   }
 
@@ -347,6 +385,8 @@ export default function ListenScreen() {
           onBack={() => setArticle(null)}
           onTranslate={() => void translate()}
           translating={translating}
+          onTranscribe={() => void transcribe()}
+          transcribing={transcribing}
         />
       )}
 

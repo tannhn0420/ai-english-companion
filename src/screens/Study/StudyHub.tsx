@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { useI18n, type MsgKey } from '../../i18n';
 
 const MODES: { to: string; icon: string; label: MsgKey; phase?: string }[] = [
-  { to: '/review', icon: '📇', label: 'studyReview', phase: 'Phase 2' },
-  { to: '/quiz', icon: '🎯', label: 'studyQuizCloze', phase: 'Phase 2' },
+  { to: '/review', icon: '📇', label: 'studyReview' },
+  { to: '/quiz', icon: '🎯', label: 'studyQuizCloze' },
   { to: '/deck', icon: '🗂️', label: 'studyDeck' },
   { to: '/study', icon: '📓', label: 'studyMistakes', phase: 'Phase 9' },
 ];

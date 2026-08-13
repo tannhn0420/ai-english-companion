@@ -226,6 +226,9 @@ export const vi = {
   listenPlayArticle: '▶ Phát bài này',
   listenPause: '⏸ Tạm dừng',
   listenNoAudio: 'Bài này không có audio.',
+  listenNoTranscript: 'Bài này không có transcript sẵn (thường là podcast tổng hợp).',
+  listenTranscribe: '🎙️ Tạo transcript bằng AI',
+  listenTranscribing: 'Đang nghe & ghi lại… (có thể mất 20–40s)',
 
   // Dictation (Phase 6)
   dictQuickStart: 'Bắt đầu nhanh',

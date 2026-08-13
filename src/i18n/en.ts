@@ -225,6 +225,9 @@ export const en: Record<keyof typeof vi, string> = {
   listenPlayArticle: '▶ Play this story',
   listenPause: '⏸ Pause',
   listenNoAudio: 'This story has no audio.',
+  listenNoTranscript: 'No transcript available for this one (usually a compilation podcast).',
+  listenTranscribe: '🎙️ Generate transcript with AI',
+  listenTranscribing: 'Listening & transcribing… (may take 20–40s)',
 
   // Dictation (Phase 6)
   dictQuickStart: 'Quick start',

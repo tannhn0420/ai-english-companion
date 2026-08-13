@@ -8,6 +8,7 @@
 import { splitSentences } from '../core/sentences';
 import { extractJson } from '../core/aiJson';
 import { complete } from './ai/client';
+import { transcribeAudioUrl } from './ai/transcribe';
 import { getArticle, listArticles, putArticle } from './db';
 
 export interface VoaFeedItem {
@@ -103,9 +104,24 @@ export async function loadArticle(item: VoaFeedItem): Promise<VoaArticle> {
     audio: audio || undefined,
     fetchedAt: Date.now(),
   };
-  if (article.sentences.length === 0) throw new Error('Không đọc được nội dung bài này.');
+  // Podcast tổng hợp có thể không có transcript trên web — cho phép mở nếu có audio
+  // (user tạo transcript bằng AI). Chỉ chặn khi không có cả text lẫn audio.
+  if (article.sentences.length === 0 && !article.audio) {
+    throw new Error('Không đọc được nội dung bài này.');
+  }
   await putArticle(article);
   return article;
+}
+
+/** Tạo transcript bằng AI (Gemini nghe audio) khi web không có sẵn. */
+export async function transcribeArticle(article: VoaArticle): Promise<VoaArticle> {
+  if (!article.audio) throw new Error('Bài này không có audio để tạo transcript.');
+  const text = await transcribeAudioUrl(proxied('audio', article.audio));
+  const sentences = splitSentences(text);
+  if (sentences.length === 0) throw new Error('Transcript rỗng — thử lại nhé.');
+  const updated: VoaArticle = { ...article, sentences, vi: undefined };
+  await putArticle(updated);
+  return updated;
 }
 
 /** Dịch song ngữ cả bài — 1 call AI tier cheap, lưu vào cache bài. */
