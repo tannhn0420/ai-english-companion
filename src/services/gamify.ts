@@ -15,6 +15,7 @@ import {
 } from '../core/gamification';
 import { dayKey } from '../core/dayKey';
 import { countCards, getMeta, setMeta } from './db';
+import { queueSync } from './sync';
 
 export interface SessionOutcome {
   earnedXp: number;
@@ -72,6 +73,8 @@ export async function recordSession(result: SessionResult, now: number): Promise
       streak: after.streak,
     },
   );
+
+  queueSync(); // phiên học = thay đổi đáng đồng bộ (thẻ đã ghi trong lúc ôn + meta vừa ghi)
 
   return {
     earnedXp: applied.earnedXp,

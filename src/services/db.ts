@@ -90,14 +90,32 @@ export async function putCards(cards: VocabCard[]): Promise<void> {
   await tx.done;
 }
 
+/** Xóa theo yêu cầu user — ghi tombstone (meta `tombstones`) để sync lan truyền xóa. */
 export async function deleteCard(id: string): Promise<void> {
+  const db = await getDb();
+  await db.delete('cards', id);
+  await addTombstones([id]);
+}
+
+/** Xóa do sync pull (tombstone từ máy khác) — KHÔNG tạo tombstone mới. */
+export async function deleteCardRaw(id: string): Promise<void> {
   const db = await getDb();
   await db.delete('cards', id);
 }
 
 export async function clearCards(): Promise<void> {
   const db = await getDb();
+  const ids = (await db.getAllKeys('cards')) as string[];
   await db.clear('cards');
+  await addTombstones(ids);
+}
+
+async function addTombstones(ids: string[]): Promise<void> {
+  if (ids.length === 0) return;
+  const now = Date.now();
+  const map = await getMeta<Record<string, number>>('tombstones', {});
+  for (const id of ids) map[id] = now;
+  await setMeta('tombstones', map);
 }
 
 export async function countCards(): Promise<number> {

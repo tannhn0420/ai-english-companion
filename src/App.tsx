@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import TabBar from './components/TabBar';
+import { syncNow } from './services/sync';
 import DeckScreen from './screens/Deck/DeckScreen';
 import HomeScreen from './screens/Home/HomeScreen';
 import StudyHub from './screens/Study/StudyHub';
@@ -11,6 +13,11 @@ import SettingsScreen from './screens/Settings/SettingsScreen';
 import ComingSoon from './screens/ComingSoon';
 
 export default function App() {
+  // Sync khi mở app (đã đăng nhập thì kéo/đẩy, chưa thì thoát êm)
+  useEffect(() => {
+    void syncNow().catch(() => {});
+  }, []);
+
   return (
     <BrowserRouter>
       <div className="app-shell">

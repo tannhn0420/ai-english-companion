@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import { normalizeImported, parseImport, serialize } from '../../core/importExport';
 import { getManifest, type BundleManifest } from '../../services/dataBundle';
 import { download } from '../../services/download';
 import { getSettings, saveSettings, type AppSettings } from '../../services/settings';
+import { getSession, signIn, signOut, signUp } from '../../services/supabase';
+import { lastSyncedAt, syncNow } from '../../services/sync';
 import { sortedVoices, speak } from '../../services/tts';
 import { useDeck } from '../../hooks/useDeck';
 import { useVoices } from '../../hooks/useVoices';
@@ -25,9 +28,58 @@ export default function SettingsScreen() {
   const [toast, setToast] = useState('');
   const restoreRef = useRef<HTMLInputElement>(null);
 
+  // Sync
+  const [session, setSession] = useState<Session | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [syncMsg, setSyncMsg] = useState('');
+  const [syncBusy, setSyncBusy] = useState(false);
+
   useEffect(() => {
     void getManifest().then(setManifest);
+    void getSession().then(setSession);
   }, []);
+
+  async function runSync() {
+    setSyncBusy(true);
+    const r = await syncNow();
+    setSyncBusy(false);
+    if (r.status === 'ok') {
+      setSyncMsg(t('syncDone', { pulled: r.pulled ?? 0, pushed: r.pushed ?? 0 }));
+    } else if (r.status === 'error') {
+      setSyncMsg(t('syncError', { msg: r.message ?? '?' }));
+    }
+  }
+
+  async function handleSignIn() {
+    setSyncBusy(true);
+    setSyncMsg('');
+    const err = await signIn(email.trim(), password);
+    if (err) {
+      setSyncMsg(err);
+      setSyncBusy(false);
+      return;
+    }
+    setSession(await getSession());
+    setSyncBusy(false);
+    void runSync();
+  }
+
+  async function handleSignUp() {
+    setSyncBusy(true);
+    setSyncMsg('');
+    const err = await signUp(email.trim(), password);
+    setSyncBusy(false);
+    if (err) {
+      setSyncMsg(err);
+      return;
+    }
+    const s = await getSession();
+    setSession(s);
+    // Nếu project bật "Confirm email" thì chưa có session ngay
+    if (!s) setSyncMsg(t('syncConfirmEmail'));
+    else void runSync();
+  }
 
   function showToast(msg: string) {
     setToast(msg);
@@ -196,6 +248,83 @@ export default function SettingsScreen() {
             {t('settingsClear')}
           </button>
         </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 12 }}>
+        <h3>{t('syncTitle')}</h3>
+        {session ? (
+          <>
+            <p className="text-2" style={{ marginTop: 0 }}>
+              {t('syncedAs', { email: session.user.email ?? '' })}
+              <br />
+              {(() => {
+                const at = lastSyncedAt(session.user.id);
+                return at ? t('syncLast', { time: new Date(at).toLocaleString() }) : t('syncNever');
+              })()}
+            </p>
+            <div className="toolbar" style={{ marginBottom: 0 }}>
+              <button className="btn" onClick={() => void runSync()} disabled={syncBusy}>
+                {syncBusy ? '…' : t('syncNowBtn')}
+              </button>
+              <button
+                className="btn"
+                onClick={() => {
+                  void signOut().then(() => setSession(null));
+                }}
+              >
+                {t('syncSignOut')}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-2" style={{ marginTop: 0 }}>
+              {t('syncHint')}
+            </p>
+            <div className="field">
+              <label>{t('syncEmail')}</label>
+              <input
+                className="input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
+            <div className="field">
+              <label>{t('syncPassword')}</label>
+              <input
+                className="input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
+            </div>
+            <div className="row">
+              <button
+                className="btn-primary"
+                style={{ flex: 1 }}
+                onClick={() => void handleSignIn()}
+                disabled={syncBusy || !email.trim() || password.length < 6}
+              >
+                {t('syncSignIn')}
+              </button>
+              <button
+                className="btn"
+                onClick={() => void handleSignUp()}
+                disabled={syncBusy || !email.trim() || password.length < 6}
+              >
+                {t('syncSignUp')}
+              </button>
+            </div>
+          </>
+        )}
+        {syncMsg && (
+          <p className="text-2" style={{ fontSize: 13, marginBottom: 0 }}>
+            {syncMsg}
+          </p>
+        )}
       </div>
 
       {(

@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🎉 M1 (Phase 0–3) code xong — MVP hoàn chỉnh. Chờ AC test tay: round-trip file với extension (P1), ôn 10 thẻ offline trên điện thoại (P2), streak 2 ngày liên tiếp (P3). Tiếp theo: Phase 8 — Cloud Sync (M1.5, đã kéo lên).**
+**Trạng thái hiện tại: 🚧 Phase 8 (M1.5) — sync code xong, chờ chủ dự án chạy `supabase/schema.sql` + set Site URL rồi test 2 thiết bị. Còn lại trong phase: Web Push + sync phía extension. Tiếp theo sau đó: M2 (Phase 4).**
 
 ## Tổng quan Milestones
 
@@ -165,11 +165,13 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ## Phase 8 — Cloud Sync + Push (~4-5 buổi) — ⬆ chạy ngay sau Phase 3 (M1.5)
 
-- [ ] Supabase project: Auth (Google), bảng `cards` + `meta` (RLS theo user), tombstone delete.
-- [ ] Client sync: pull-then-push, last-write-wins theo `updatedAt`; chạy khi mở app + sau mỗi phiên.
-- [ ] Migration: gán `updatedAt` cho thẻ cũ; xử lý merge lần đầu đăng nhập (local ∪ cloud, dedupe).
-- [ ] Web Push: xin quyền, lưu subscription; Edge Function cron gửi "N từ đến hạn" theo `reminderHour`.
-- [ ] (Extension) thêm sync client tương tự → hai bên tự đồng bộ, bỏ import/export thủ công.
+- [x] Schema Supabase: bảng `cards` (payload jsonb — giữ nguyên shape D8) + `meta`, RLS per-user, tombstone delete — file `supabase/schema.sql`, **chủ dự án chạy 1 lần trong SQL Editor**.
+- [x] Auth: **email + mật khẩu** (đổi từ Google — zero-config, không cần GCP OAuth; Google có thể bật thêm sau trên dashboard). UI trong Cài đặt → Đồng bộ.
+- [x] Client sync: pull-then-push, LWW theo `updatedAt`; supabase-js lazy-load (chunk riêng, bundle chính vẫn < budget); chạy khi mở app + debounce 3s sau mỗi phiên học/sửa deck + nút "Đồng bộ ngay".
+- [x] Merge dữ liệu học: `practiceDays`/`weakWords` merge **max-wise** từng entry (idempotent, không double-count), `practiceStats` dẫn xuất lại từ days, freeze lấy ngày gần nhất — `core/syncMerge.ts`, 6 unit tests.
+- [x] Migration: import stamp `updatedAt = now`; thẻ xóa cục bộ ghi tombstone (meta) và lan truyền qua sync.
+- [ ] Web Push: xin quyền, lưu subscription; Edge Function cron gửi "N từ đến hạn" theo `reminderHour`. ⬅ làm sau khi sync chạy ổn
+- [ ] (Extension) thêm sync client tương tự → hai bên tự đồng bộ, bỏ import/export thủ công. ⬅ làm ở repo extension
 
 **Acceptance criteria:**
 - Sửa thẻ trên web app → thấy trên extension (và ngược lại) sau lần sync kế tiếp.

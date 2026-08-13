@@ -253,12 +253,13 @@ Pack passage/dialogue → tts.playlist([{text, lang}...], { mode: 'en-vi' | 'en-
   Wake Lock API giữ màn hình khi đang phát; MediaSession API hiện control trên lock screen (best-effort)
 ```
 
-### 4.4 Sync (Phase 8 — thiết kế trước, làm sau)
+### 4.4 Sync (Phase 8 / M1.5 — đã triển khai phía app)
 
-- Supabase Auth (Google) → bảng `cards` (cột = fields của VocabCard + `user_id`, `updated_at`, `deleted` tombstone) + bảng `meta`.
-- Chiến lược: **last-write-wins theo `updatedAt`**, đồng bộ pull-then-push khi mở app và sau mỗi phiên ôn.
+- Supabase Auth **email + mật khẩu** (zero-config; Google bật thêm sau nếu muốn) → bảng `cards` (`payload jsonb` = nguyên con VocabCard, D8) + bảng `meta`, RLS per-user, xóa = tombstone (`deleted = true`). Schema: `supabase/schema.sql`.
+- **LWW theo `updatedAt`** cho thẻ (`core/syncMerge.resolveRemote`); dữ liệu học merge **max-wise** từng entry (`mergeDays`/`mergeWeak` — idempotent), `practiceStats` dẫn xuất lại từ days sau merge. Chấp nhận: LWW dựa đồng hồ client (đủ cho dùng cá nhân).
+- Pull-then-push (`services/sync.ts`): delta pull theo `updated_at`, push thẻ dirty (stamp > pushedAt) + tombstones cục bộ; chạy khi mở app, debounce 3s sau mutation/phiên học, và nút thủ công. `@supabase/supabase-js` lazy-load thành chunk riêng để giữ budget §11.
 - Extension tham gia sau bằng cách thêm cùng client sync (đó là lý do `core/` phải thuần).
-- Push reminder: Supabase Edge Function chạy cron → Web Push đến subscription đã đăng ký.
+- Push reminder: Supabase Edge Function chạy cron → Web Push đến subscription đã đăng ký (phần còn lại của phase).
 
 ## 5. PWA
 

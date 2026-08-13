@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { VocabCard } from '../core/types';
 import { mergeImport } from '../core/importExport';
 import * as db from '../services/db';
+import { queueSync } from '../services/sync';
 
 /** Deck từ IndexedDB + các thao tác ghi (ghi DB trước, cập nhật state sau). */
 export function useDeck() {
@@ -36,18 +37,24 @@ export function useDeck() {
       }
       return [card, ...prev];
     });
+    queueSync();
   }, []);
 
   const remove = useCallback(async (id: string) => {
     await db.deleteCard(id);
     setDeck((prev) => prev.filter((c) => c.id !== id));
+    queueSync();
   }, []);
 
   const importCards = useCallback(
     async (incoming: VocabCard[]) => {
-      const { toAdd, added, skipped } = mergeImport(deck, incoming);
+      const { toAdd: raw, added, skipped } = mergeImport(deck, incoming);
+      // Import là một lần GHI cục bộ mới → stamp updatedAt để sync đẩy lên
+      const now = Date.now();
+      const toAdd = raw.map((c) => ({ ...c, updatedAt: now }));
       if (toAdd.length) await db.putCards(toAdd);
       setDeck((prev) => [...toAdd, ...prev]);
+      queueSync();
       return { added, skipped };
     },
     [deck],
@@ -56,6 +63,7 @@ export function useDeck() {
   const clearAll = useCallback(async () => {
     await db.clearCards();
     setDeck([]);
+    queueSync();
   }, []);
 
   return { deck, loading, upsert, remove, importCards, clearAll };

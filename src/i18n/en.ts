@@ -151,6 +151,22 @@ export const en: Record<keyof typeof vi, string> = {
   badge_attempts100: '100 reviews',
   badge_attempts500: '500 reviews',
 
+  // Sync (Supabase)
+  syncTitle: 'Sync across devices',
+  syncHint: 'Sign in to sync your wordbook and progress between computer and phone. Optional — without an account everything stays on this device.',
+  syncEmail: 'Email',
+  syncPassword: 'Password (6+ characters)',
+  syncSignIn: 'Sign in',
+  syncSignUp: 'Create account',
+  syncSignOut: 'Sign out',
+  syncNowBtn: '🔄 Sync now',
+  syncedAs: 'Signed in: {email}',
+  syncLast: 'Last synced: {time}',
+  syncNever: 'Never synced yet.',
+  syncDone: 'Synced ✓ (pulled {pulled}, pushed {pushed})',
+  syncError: 'Sync failed: {msg}',
+  syncConfirmEmail: 'Check your inbox, confirm your email, then sign in again.',
+
   // Toasts
   toastSaved: 'Saved',
   toastDeleted: 'Deleted',

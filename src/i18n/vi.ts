@@ -152,6 +152,22 @@ export const vi = {
   badge_attempts100: '100 lượt ôn',
   badge_attempts500: '500 lượt ôn',
 
+  // Sync (Supabase)
+  syncTitle: 'Đồng bộ giữa các thiết bị',
+  syncHint: 'Đăng nhập để sổ từ và tiến độ tự đồng bộ giữa máy tính và điện thoại. Không bắt buộc — chưa đăng nhập thì mọi thứ vẫn nằm trên máy này.',
+  syncEmail: 'Email',
+  syncPassword: 'Mật khẩu (≥ 6 ký tự)',
+  syncSignIn: 'Đăng nhập',
+  syncSignUp: 'Tạo tài khoản',
+  syncSignOut: 'Đăng xuất',
+  syncNowBtn: '🔄 Đồng bộ ngay',
+  syncedAs: 'Đã đăng nhập: {email}',
+  syncLast: 'Lần đồng bộ cuối: {time}',
+  syncNever: 'Chưa đồng bộ lần nào.',
+  syncDone: 'Đã đồng bộ ✓ (nhận {pulled}, gửi {pushed})',
+  syncError: 'Đồng bộ lỗi: {msg}',
+  syncConfirmEmail: 'Kiểm tra hộp thư, bấm link xác nhận, rồi quay lại đăng nhập.',
+
   // Toasts
   toastSaved: 'Đã lưu',
   toastDeleted: 'Đã xóa',
