@@ -20,7 +20,7 @@ Extension `ai-translator-ext` đã làm tốt việc **thu thập** (lưu từ k
 | **Người đi làm học TA** (chính) | Đọc tài liệu EN trên desktop (dùng extension), muốn tận dụng thời gian rảnh trên điện thoại | Ôn từ đã lưu, phiên ngắn 2–5 phút, nghe passive khi đi đường |
 | **Người luyện IELTS/giao tiếp** | Cần luyện nghe – nói – từ vựng theo chủ đề | Practice packs, dictation, speaking, feedback AI |
 
-Ngôn ngữ UI: **tiếng Việt** (nhãn, hướng dẫn, giải nghĩa), nội dung học là tiếng Anh.
+Ngôn ngữ UI: **song ngữ — tiếng Việt (mặc định) và English**, đổi trong Settings (D13). Giải nghĩa/giải thích lỗi ưu tiên tiếng Việt; nội dung học là tiếng Anh.
 
 ## 3. User Stories theo Epic
 
@@ -80,7 +80,7 @@ Ngôn ngữ UI: **tiếng Việt** (nhãn, hướng dẫn, giải nghĩa), nội
 - PWA installable + offline (Epic A đầy đủ, Epic B đầy đủ).
 - Import/export tương thích extension (F1).
 - TTS phát âm.
-- UI tiếng Việt, dark/light theme, mobile-first + dùng tốt trên desktop.
+- UI song ngữ VI/EN (D13), dark/light theme, mobile-first + dùng tốt trên desktop.
 
 **Sau MVP:** Epic C, D (M2) → E, F2, F3 (M3) → G, H (M4) — chi tiết milestone trong [PHASES.md](PHASES.md); ý tưởng chưa xếp lịch nằm ở [IDEAS.md](IDEAS.md).
 

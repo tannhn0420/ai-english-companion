@@ -2,6 +2,23 @@
 
 > UI/UX spec. Mobile-first, một tay, phiên ngắn. Kế thừa ngôn ngữ thị giác của extension (navy đậm + tím) để hai app cảm giác cùng một hệ.
 
+## 0. Định hướng thẩm mỹ — "Sổ từ sống" (D14)
+
+App này là **cuốn sổ từ của riêng bạn, đang sống và lớn lên mỗi ngày**. Chất liệu thị giác lấy từ chính thế giới của việc học từ: *mục từ điển* và *vết bút highlight* — không phải dashboard, không phải game.
+
+- **Typography là nhân vật chính.** Một typeface duy nhất — **Be Vietnam Pro** (thiết kế cho tiếng Việt, diacritics chuẩn, OFL, self-host) — với 3 giọng rõ ràng: **800** cho headword/hero (chặt, tự tin), **600** cho nhấn/nút, **400** cho body. Số liệu dùng `font-variant-numeric: tabular-nums`.
+- **Flashcard = mục từ điển.** Mặt thẻ set đúng vernacular từ điển: headword 800 cỡ lớn chữ thường, IPA trong /…/ màu `--text-2`, loại từ in nghiêng, nghĩa đánh số — người học đã quen đọc format này cả đời, không cần học lại UI.
+- **Signature: marker highlight (`.hl`).** Nét bút dạ quét sau từ khóa — chính là hành vi của extension (đánh dấu từ trên trang web) mang vào app. Dark: vệt tím mờ sau chữ trắng; light: vệt vàng sau chữ đậm. **Kỷ luật: tối đa 1–2 vết mỗi màn hình** (Home hero; headword khi lật thẻ đúng).
+- **Mọi thứ còn lại giữ yên lặng**: nền phẳng, card viền mảnh, không gradient trang trí, không glassmorphism, motion chỉ ở flip thẻ và micro-feedback rating.
+
+### Giọng chữ (copy voice)
+
+- Động từ chủ động, sentence case: "Ôn ngay", "Lưu thẻ", "Nghe lại" — không "Submit/OK".
+- Nút nói đúng việc nó làm; tên hành động nhất quán xuyên suốt flow ("Import" ở nút → toast "Đã import 132 thẻ").
+- Lỗi: nói chuyện gì xảy ra + cách sửa, không xin lỗi vòng vo ("Key chưa đúng — kiểm tra trong Cài đặt → AI").
+- Màn hình trống = lời mời hành động, không phải tâm trạng ("Deck đang trống. Import từ extension hoặc thêm thẻ đầu tiên.").
+- Cả hai ngôn ngữ (VI/EN) giữ cùng register: ngắn, cụ thể, không filler.
+
 ## 1. Nguyên tắc
 
 1. **2 chạm đến giá trị**: mở app → "Ôn ngay" → đang học. Mọi tính năng chính cách Home đúng 1 chạm.
@@ -32,8 +49,9 @@ Hợp nhất từ các bộ token đang phân mảnh của extension (index.css 
 | `--radius-s` | `8px` | | Chip, input |
 | `--shadow` | `0 8px 24px rgb(0 0 0 / .35)` | nhạt hơn | Sheet, card nổi |
 
-- Font: system stack (`-apple-system, Segoe UI, Roboto…`) — không load webfont (offline + tốc độ).
-- Cỡ chữ: base 16px; term trên flashcard 28–32px; hỗ trợ `prefers-reduced-motion`.
+- Font: **Be Vietnam Pro** (self-host `@fontsource`, subset latin + vietnamese, weights 400/600/800, precache nên offline được — D14); fallback system stack.
+- Token mới theo D14: `--hl` (marker highlight — dark: tím mờ, light: vàng `#fde68a`), `--font-display` (= Be Vietnam Pro 800).
+- Cỡ chữ: base 16px; headword trên flashcard 32–36px weight 800; hỗ trợ `prefers-reduced-motion`.
 - Contrast: mọi cặp chữ/nền đạt WCAG AA (theme extension đã đạt, giữ nguyên).
 
 ## 3. Điều hướng

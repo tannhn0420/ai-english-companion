@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🚧 Phase 0 — code xong (build/lint/test pass), còn bước deploy Cloudflare Pages.**
+**Trạng thái hiện tại: ✅ Phase 0 xong (đã deploy Cloudflare). Tiếp theo: Phase 1 — Data Core & Deck.**
 
 ## Tổng quan Milestones
 
@@ -29,7 +29,9 @@ Mục tiêu: khung app chạy được, cài được lên điện thoại, có 
 - [x] Layout shell: bottom TabBar (mobile) / side rail (desktop ≥ 768px), 4 tab: Home, Ôn tập, Luyện, Cài đặt.
 - [x] Router + màn hình placeholder; theme dark/light (đọc localStorage trước khi render — không flash).
 - [x] Icons app (placeholder chữ E nền tím — thay bằng icon xịn sau).
-- [ ] Chốt D11 + deploy Cloudflare Pages ngay từ skeleton — có URL thật để test trên điện thoại từ ngày đầu. ⬅ cần tài khoản Cloudflare của chủ dự án
+- [x] Chốt D11 + deploy Cloudflare (Workers Builds + wrangler assets-only, SPA fallback) — live trên URL thật.
+- [x] i18n foundation (D13): `src/i18n/` typed VI/EN, toggle trong Settings, mọi string qua `t()`.
+- [x] Design direction (D14): Be Vietnam Pro self-host, type scale, marker highlight `.hl`.
 
 **Acceptance criteria:**
 - App live tại URL công khai, auto-deploy khi push `master`.

@@ -17,6 +17,8 @@
 | D10 | FVDP (GPL) chưa dùng | accepted | 2026-08-13 |
 | D11 | Hosting: Cloudflare Pages + Worker proxy cho VOA | proposed | 2026-08-13 |
 | D12 | Mistake Notebook là store trung tâm nối mọi kỹ năng | accepted | 2026-08-13 |
+| D13 | UI song ngữ VI/EN — i18n tự viết, typed, không thư viện | accepted | 2026-08-13 |
+| D14 | Design direction "Sổ từ sống": Be Vietnam Pro + dictionary-entry + marker highlight | accepted | 2026-08-13 |
 
 ---
 
@@ -69,6 +71,17 @@
 **Bối cảnh:** cần host tĩnh miễn phí, nhanh ở VN, HTTPS (bắt buộc cho PWA/SW), và chỗ đặt CORS proxy cho VOA (DATA.md §5a).
 **Đề xuất:** Cloudflare Pages (deploy từ git, free) + 1 Worker stateless cho proxy. Thay thế tương đương: GitHub Pages (không có Worker) / Vercel.
 **Chốt khi:** bắt đầu Phase 0 (Pages) và Phase 5 (Worker).
+
+## D13 — UI song ngữ VI/EN, i18n tự viết
+**Bối cảnh:** app cần dùng được bằng cả tiếng Việt (mặc định) và tiếng Anh; chỉ 2 locale, bundle budget chặt (ARCHITECTURE §11).
+**Quyết định:** module `src/i18n/` tự viết (~1KB): `vi.ts` là nguồn chân lý của key (typed `MsgKey`), `en.ts` bắt buộc đủ key qua type-check; hook `useI18n()` + `t(key)`; lưu `aec-lang` trong localStorage, đổi trong Settings. KHÔNG dùng react-i18next/formatjs.
+**Quy tắc:** mọi UI string đi qua `t()` — không hardcode trong component; `core/` không chứa UI string (trả code/data, screen tự dịch).
+**Xét lại khi:** cần locale thứ 3, plural phức tạp, hoặc lazy-load bản dịch.
+
+## D14 — Design direction "Sổ từ sống"
+**Bối cảnh:** cần bản sắc thị giác riêng, không rơi vào look "dark + 1 accent" mặc định của AI; đồng thời phải cùng nhận diện với extension (navy + tím — ràng buộc có sẵn).
+**Quyết định:** chất liệu lấy từ thế giới của chủ đề — *mục từ điển* và *bút highlight*: (1) typeface **Be Vietnam Pro** (OFL, thiết kế cho tiếng Việt, đủ diacritics; 3 giọng 800/600/400, self-host qua `@fontsource/be-vietnam-pro` để offline); (2) thẻ flashcard set kiểu **dictionary entry** (headword lớn, IPA /../, nghĩa đánh số) — spec DESIGN.md; (3) signature **marker highlight** (`.hl`) quét sau từ khóa — tím trên dark, vàng trên light — dùng tiết chế (Home hero + headword khi flip). Nền navy/tím giữ nguyên theo extension.
+**Hệ quả:** +~200KB woff2 vào precache (không tính vào budget JS); dependency mới `@fontsource/be-vietnam-pro` (ghi vào ARCHITECTURE §1).
 
 ## D12 — Mistake Notebook là store trung tâm
 **Bối cảnh:** lỗi của user phát sinh rải rác ở dictation, speaking, writing, quiz — mỗi nơi tự xử lý thì vòng lặp học đứt.

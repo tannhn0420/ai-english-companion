@@ -51,6 +51,7 @@ npm run lint      # ESLint + tsc --noEmit
 ## Code Conventions
 - Giống extension: components PascalCase, hooks `use*` camelCase, services camelCase
 - TypeScript strict; không `any` trần
-- UI text tiếng Việt, nội dung học tiếng Anh; error message thân thiện tiếng Việt
+- **Mọi UI string qua `src/i18n` `t()`** (VI mặc định + EN, D13) — không hardcode chuỗi trong component; `core/` không chứa UI string
+- Design theo D14 "Sổ từ sống": Be Vietnam Pro (800/600/400), dictionary-entry cho flashcard, marker highlight `.hl` dùng tiết chế — xem DESIGN.md §0
 - Mobile-first: touch target ≥ 44px, thao tác chính một tay, xem DESIGN.md §1
 - Theme dark mặc định qua `[data-theme]`, đọc localStorage TRƯỚC khi render để không flash

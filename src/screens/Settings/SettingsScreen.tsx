@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useI18n, type MsgKey } from '../../i18n';
 
 type Theme = 'dark' | 'light';
 
@@ -7,6 +8,7 @@ function currentTheme(): Theme {
 }
 
 export default function SettingsScreen() {
+  const { t, lang, setLang } = useI18n();
   const [theme, setTheme] = useState<Theme>(currentTheme);
 
   function applyTheme(next: Theme) {
@@ -19,34 +21,41 @@ export default function SettingsScreen() {
     }
   }
 
+  const placeholders: [MsgKey, string][] = [
+    ['settingsVoice', 'Phase 1'],
+    ['settingsAI', 'Phase 4'],
+    ['settingsLearning', 'Phase 3'],
+    ['settingsData', 'Phase 1'],
+    ['settingsCredits', 'Phase 1'],
+  ];
+
   return (
     <div>
-      <h1 className="screen-title">Cài đặt</h1>
+      <h1 className="screen-title">{t('settingsTitle')}</h1>
 
       <div className="card" style={{ marginBottom: 12 }}>
-        <h3>Giao diện</h3>
+        <h3>{t('settingsAppearance')}</h3>
         <div className="hub-item">
-          <span className="hub-item__label">Theme</span>
+          <span className="hub-item__label">{t('settingsTheme')}</span>
           <button
             className="badge-soon"
             onClick={() => applyTheme(theme === 'dark' ? 'light' : 'dark')}
           >
-            {theme === 'dark' ? '🌙 Tối' : '☀️ Sáng'} — đổi
+            {theme === 'dark' ? t('settingsThemeDark') : t('settingsThemeLight')} —{' '}
+            {t('settingsThemeSwitch')}
+          </button>
+        </div>
+        <div className="hub-item">
+          <span className="hub-item__label">{t('settingsLanguage')}</span>
+          <button className="badge-soon" onClick={() => setLang(lang === 'vi' ? 'en' : 'vi')}>
+            {lang === 'vi' ? 'Tiếng Việt' : 'English'} — {t('settingsThemeSwitch')}
           </button>
         </div>
       </div>
 
-      {(
-        [
-          ['Phát âm (giọng, tốc độ)', 'Phase 1'],
-          ['AI (provider, API key)', 'Phase 4'],
-          ['Học tập (mục tiêu ngày)', 'Phase 3'],
-          ['Dữ liệu (import/export/backup)', 'Phase 1'],
-          ['Nguồn dữ liệu & ghi công', 'Phase 1'],
-        ] as const
-      ).map(([label, phase]) => (
+      {placeholders.map(([label, phase]) => (
         <div key={label} className="card hub-item" style={{ marginBottom: 12 }} aria-disabled>
-          <span className="hub-item__label">{label}</span>
+          <span className="hub-item__label">{t(label)}</span>
           <span className="badge-soon">{phase}</span>
         </div>
       ))}

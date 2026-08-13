@@ -14,6 +14,8 @@
 | Local DB | **IndexedDB qua thư viện `idb`** (~1.5 kB) | Deck có thể vài nghìn thẻ + ảnh data-URL → vượt localStorage; `idb` chỉ là Promise wrapper mỏng |
 | Settings | **localStorage** | Nhỏ, đọc đồng bộ khi boot (theme không bị flash) |
 | SRS engine | **FSRS qua `ts-fsrs`** (MIT, TS thuần) | Thuật toán Anki hiện dùng làm mặc định — giảm ~20-30% số lần ôn so với SM-2 cho cùng mức nhớ. Quyết từ đầu để không phải migrate data SRS sau |
+| i18n | **Tự viết, typed** (`src/i18n/`, VI mặc định + EN) | 2 locale, key type-safe, ~1KB — thư viện i18n là thừa (D13) |
+| Fonts | **Be Vietnam Pro** self-host qua `@fontsource/be-vietnam-pro` (OFL) | Thiết kế cho tiếng Việt, đủ diacritics, offline được (D14) |
 | Dữ liệu học | **Bundle nguồn mở** (NGSL, Tatoeba EN-VI, CMUdict-IPA) + API từ điển miễn phí | Nội dung 0-token, offline. Chi tiết nguồn, license, pipeline: [DATA.md](DATA.md) |
 | AI | Gọi **trực tiếp từ browser** (fetch) | Gemini/Groq/OpenRouter hỗ trợ CORS + API key của user. Không cần proxy/backend |
 | TTS | **Web Speech API** (SpeechSynthesis) | Port `utils/voice.ts` từ extension |
@@ -71,6 +73,7 @@ ai-english-companion/
 │   │   │   └── prompts.ts       # prompt templates: practice pack, feedback, assess
 │   │   ├── tts.ts               # port voice.ts: pickVoice, speak, playlist engine
 │   │   └── stt.ts               # SpeechRecognition wrapper + capability detect
+│   ├── i18n/                    # vi.ts (nguồn chân lý key), en.ts, t() + useI18n (D13)
 │   ├── hooks/                   # useDeck, useSettings, useTTS, useStreak…
 │   └── styles/
 │       ├── tokens.css           # design tokens (port từ extension, xem DESIGN.md)

@@ -45,7 +45,22 @@ h1,
 h2,
 h3 {
   margin: 0 0 0.5rem;
-  line-height: 1.25;
+  font-weight: var(--w-display);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Signature (D14): vết bút highlight sau từ khóa — tối đa 1-2 vết mỗi màn hình */
+.hl {
+  background: linear-gradient(100deg, transparent 2%, var(--hl) 8%, var(--hl) 94%, transparent 98%);
+  padding: 0 0.15em;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -181,8 +196,15 @@ h3 {
 }
 
 .screen-title {
-  font-size: 22px;
+  font-size: var(--fs-title);
   margin: 8px 0 16px;
+}
+
+.hero-line {
+  font-size: var(--fs-hero);
+  font-weight: var(--w-display);
+  line-height: 1.3;
+  margin: 0 0 16px;
 }
 
 .text-2 {

@@ -17,9 +17,9 @@ export default function App() {
             <Route path="/practice" element={<PracticeHub />} />
             <Route path="/settings" element={<SettingsScreen />} />
             {/* Đích của manifest shortcuts — thành màn thật ở Phase 2 */}
-            <Route path="/review" element={<ComingSoon title="Ôn thẻ (SRS)" phase="Phase 2" />} />
-            <Route path="/quiz" element={<ComingSoon title="Quiz" phase="Phase 2" />} />
-            <Route path="*" element={<ComingSoon title="Không tìm thấy trang" phase="" />} />
+            <Route path="/review" element={<ComingSoon titleKey="soonReview" phase="Phase 2" />} />
+            <Route path="/quiz" element={<ComingSoon titleKey="soonQuiz" phase="Phase 2" />} />
+            <Route path="*" element={<ComingSoon titleKey="notFoundTitle" />} />
           </Routes>
         </main>
         <TabBar />
