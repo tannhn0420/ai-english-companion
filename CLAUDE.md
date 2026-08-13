@@ -3,7 +3,7 @@
 ## Project Overview
 Web app (PWA) học tiếng Anh EN ↔ VI mọi lúc trên điện thoại + máy tính. Companion app của Chrome Extension `ai-translator-ext` (repo cùng cấp: `../ai-translator-ext`): extension thu thập từ vựng khi đọc web, app này để ôn luyện (SRS flashcards, quiz, nghe, dictation, nói) — offline-first, gamified.
 
-**Trạng thái: planning xong, chưa scaffold code. Bắt đầu từ Phase 0 trong docs/PHASES.md.**
+**Trạng thái: Phase 0 scaffold xong (PWA shell + TabBar + theme + icons, build/lint/test pass); còn deploy Cloudflare Pages. Tiếp theo: Phase 1 trong docs/PHASES.md.**
 
 ## Docs (đọc trước khi làm)
 - `docs/REQUIREMENTS.md` — mục tiêu, user stories, phạm vi MVP, non-goals, ràng buộc (R1–R7)

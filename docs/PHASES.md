@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 📋 Planning xong — chưa bắt đầu Phase 0.**
+**Trạng thái hiện tại: 🚧 Phase 0 — code xong (build/lint/test pass), còn bước deploy Cloudflare Pages.**
 
 ## Tổng quan Milestones
 
@@ -23,13 +23,13 @@ Checkpoint bắt buộc giữa các milestone: **dùng thật ≥ 1 tuần**, r�
 
 Mục tiêu: khung app chạy được, cài được lên điện thoại, có theme + navigation.
 
-- [ ] `npm create vite@latest` (react-ts) + ESLint + Vitest + tsconfig strict.
-- [ ] `vite-plugin-pwa`: manifest (tên, icons 192/512/maskable, standalone, shortcuts), autoUpdate SW.
-- [ ] `styles/tokens.css` port design tokens từ extension + `base.css` (xem DESIGN.md).
-- [ ] Layout shell: bottom TabBar (mobile) / side rail (desktop ≥ 768px), 4 tab: Home, Ôn tập, Luyện, Cài đặt.
-- [ ] Router + màn hình placeholder; theme dark/light (đọc localStorage trước khi render — không flash).
-- [ ] Icons app (có thể tái dùng icon extension đổi màu).
-- [ ] Chốt D11 + deploy Cloudflare Pages ngay từ skeleton — có URL thật để test trên điện thoại từ ngày đầu.
+- [x] Scaffold Vite react-ts + ESLint (flat) + Vitest + tsconfig strict.
+- [x] `vite-plugin-pwa`: manifest (tên, icons 192/512/maskable, standalone, shortcuts "Ôn ngay"/"Quiz"), autoUpdate SW.
+- [x] `styles/tokens.css` port design tokens từ extension + `base.css` (xem DESIGN.md).
+- [x] Layout shell: bottom TabBar (mobile) / side rail (desktop ≥ 768px), 4 tab: Home, Ôn tập, Luyện, Cài đặt.
+- [x] Router + màn hình placeholder; theme dark/light (đọc localStorage trước khi render — không flash).
+- [x] Icons app (placeholder chữ E nền tím — thay bằng icon xịn sau).
+- [ ] Chốt D11 + deploy Cloudflare Pages ngay từ skeleton — có URL thật để test trên điện thoại từ ngày đầu. ⬅ cần tài khoản Cloudflare của chủ dự án
 
 **Acceptance criteria:**
 - App live tại URL công khai, auto-deploy khi push `master`.

@@ -1,0 +1,190 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  /* Touch target tối thiểu (DESIGN.md §1) */
+  min-height: 44px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 0.5rem;
+  line-height: 1.25;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== App shell ===== */
+
+.app-shell {
+  min-height: 100%;
+}
+
+.app-main {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 16px 16px calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 16px);
+}
+
+/* ===== TabBar: bottom trên mobile, side rail trên desktop ===== */
+
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: flex;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  z-index: 10;
+}
+
+.tabbar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.tabbar__item .tabbar__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.tabbar__item.active {
+  color: var(--accent);
+}
+
+@media (min-width: 768px) {
+  .tabbar {
+    inset: 0 auto 0 0;
+    width: var(--rail-w);
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 24px 0;
+    gap: 4px;
+    border-top: none;
+    border-right: 1px solid var(--border);
+  }
+
+  .tabbar__item {
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+
+  .app-main {
+    margin-left: calc(var(--rail-w) + (100% - var(--rail-w) - var(--content-max)) / 2);
+    padding-bottom: 24px;
+  }
+}
+
+/* ===== Thành phần dùng chung tối thiểu cho Phase 0 ===== */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  font-size: 17px;
+  text-align: center;
+}
+
+.btn-primary:active {
+  background: var(--accent-2);
+}
+
+.hub-list {
+  display: grid;
+  gap: 12px;
+}
+
+.hub-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hub-item__label {
+  flex: 1;
+}
+
+.badge-soon {
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
+.screen-title {
+  font-size: 22px;
+  margin: 8px 0 16px;
+}
+
+.text-2 {
+  color: var(--text-2);
+}
