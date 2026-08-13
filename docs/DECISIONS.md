@@ -32,6 +32,7 @@
 **Bối cảnh:** mọi tính năng học chạy được local; AI gọi trực tiếp bằng key user.
 **Quyết định:** M1–M2 hoàn toàn không server. Sync + push = Supabase ở Phase 8. Ngoại lệ được phép: Cloudflare Worker *stateless* làm CORS proxy (D11) — không phải "backend có dữ liệu".
 **Hệ quả:** import/export thủ công cho đến Phase 8; không thu thập được telemetry (chấp nhận — xem ARCHITECTURE §12).
+**Cập nhật 2026-08-13:** Phase 8 được kéo lên chạy **ngay sau Phase 3** (milestone M1.5) theo quyết định của chủ dự án — ma sát chuyển dữ liệu máy tính ↔ điện thoại xuất hiện ngay từ tuần đầu dùng thật. Bản chất quyết định (Supabase, opt-in, local vẫn đầy đủ) không đổi.
 
 ## D3 — Copy code từ extension, không monorepo
 **Bối cảnh:** extension ổn định, đang chạy; gộp workspace CRXJS + PWA tốn công cấu hình.

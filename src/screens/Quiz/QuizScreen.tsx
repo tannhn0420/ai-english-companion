@@ -6,6 +6,7 @@ import { getDueCards } from '../../core/srs';
 import type { VocabCard } from '../../core/types';
 import { getSentenceDeps } from '../../services/dataBundle';
 import { getAllCards } from '../../services/db';
+import { recordSession, type SessionOutcome } from '../../services/gamify';
 import { bumpWeakWord } from '../../services/stats';
 import { speak } from '../../services/tts';
 import { useI18n } from '../../i18n';
@@ -35,6 +36,7 @@ export default function QuizScreen() {
   const [input, setInput] = useState('');
   const [result, setResult] = useState<'' | 'ok' | 'wrong' | 'revealed'>('');
   const [hint, setHint] = useState(false);
+  const [outcome, setOutcome] = useState<SessionOutcome | null>(null);
 
   useEffect(() => {
     void Promise.all([getAllCards(), getSentenceDeps()]).then(([cards, d]) => {
@@ -74,7 +76,14 @@ export default function QuizScreen() {
     setInput('');
     setResult('');
     setHint(false);
+    setOutcome(null);
     setPhase('run');
+  }
+
+  /** Ghi phiên vào gamification đúng một lần rồi sang summary. */
+  function finish(answered: number, correct: number) {
+    setPhase('done');
+    if (answered > 0) void recordSession({ total: answered, correct }, Date.now()).then(setOutcome);
   }
 
   // ---- MCQ ----
@@ -83,11 +92,12 @@ export default function QuizScreen() {
     if (picked != null) return;
     const q = mcqs[idx];
     setPicked(i);
-    if (i === q.answer) setScore((s) => s + 1);
-    else void bumpWeakWord(q.term);
+    const right = i === q.answer;
+    if (right) setScore((s) => s + 1);
+    void bumpWeakWord(q.term, !right);
     setTimeout(() => {
       setPicked(null);
-      if (idx + 1 >= mcqs.length) setPhase('done');
+      if (idx + 1 >= mcqs.length) finish(mcqs.length, score + (right ? 1 : 0));
       else setIdx(idx + 1);
     }, 900);
   }
@@ -103,14 +113,14 @@ export default function QuizScreen() {
       input.trim().toLowerCase() === cq.term.toLowerCase();
     setResult(ok ? 'ok' : 'wrong');
     if (ok) setScore((s) => s + 1);
-    else void bumpWeakWord(cq.term);
+    void bumpWeakWord(cq.term, !ok);
   }
 
   function nextCloze() {
     setResult('');
     setInput('');
     setHint(false);
-    if (idx + 1 >= clozes.length) setPhase('done');
+    if (idx + 1 >= clozes.length) finish(clozes.length, score);
     else setIdx(idx + 1);
   }
 
@@ -164,6 +174,17 @@ export default function QuizScreen() {
             <p className="hero-line">
               <span className="hl tabular">{t('quizScore', { right: score, total })}</span>
             </p>
+            {outcome && outcome.earnedXp > 0 && (
+              <p className="tabular" style={{ fontWeight: 600 }}>
+                {t('xpEarned', { n: outcome.earnedXp })} · {t('streakNow', { n: outcome.streak })}
+              </p>
+            )}
+            {outcome?.freezeUsed && <p className="text-2">{t('freezeSaved')}</p>}
+            {outcome?.badges.map((b) => (
+              <p key={b.id} style={{ fontWeight: 600 }}>
+                {b.icon} {t('badgeNew', { name: t(`badge_${b.id}` as Parameters<typeof t>[0]) })}
+              </p>
+            ))}
             <div className="row" style={{ marginTop: 12 }}>
               <button className="btn-primary" style={{ flex: 1 }} onClick={() => setPhase('setup')}>
                 {t('summaryContinue')}
@@ -182,7 +203,7 @@ export default function QuizScreen() {
     <div className="session-full">
       <div className="session-inner">
         <div className="session-top">
-          <button onClick={() => setPhase('done')} aria-label={t('formCancel')}>
+          <button onClick={() => finish(idx, score)} aria-label={t('formCancel')}>
             ✕
           </button>
           <div className="session-bar">
@@ -276,7 +297,7 @@ export default function QuizScreen() {
                     className="btn"
                     onClick={() => {
                       setResult('revealed');
-                      void bumpWeakWord(cq.term);
+                      void bumpWeakWord(cq.term, true);
                     }}
                   >
                     {t('clozeReveal')}

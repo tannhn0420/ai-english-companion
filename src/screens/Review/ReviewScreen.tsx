@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { ReviewRating, VocabCard } from '../../core/types';
 import { getDueCards, previewGaps, schedule } from '../../core/srs';
 import { getAllCards, putCard } from '../../services/db';
+import { recordSession, type SessionOutcome } from '../../services/gamify';
 import { getSettings, saveSettings } from '../../services/settings';
 import { speak } from '../../services/tts';
 import { useI18n } from '../../i18n';
@@ -41,10 +42,26 @@ export default function ReviewScreen() {
   const [endsAt, setEndsAt] = useState<number | null>(null);
   const [tick, setTick] = useState(0);
   const [autoSpeak, setAutoSpeak] = useState(() => getSettings().reviewAutoSpeak);
+  const [outcome, setOutcome] = useState<SessionOutcome | null>(null);
+
+  // counts mới nhất + cờ "đã ghi phiên" (mọi lối ra đều gọi finish đúng 1 lần)
+  const countsRef = useRef(counts);
+  countsRef.current = counts;
+  const recordedRef = useRef(false);
 
   // Swipe
   const [dx, setDx] = useState(0);
   const dragRef = useRef<{ startX: number; active: boolean }>({ startX: 0, active: false });
+
+  const finish = useCallback(() => {
+    setPhase('done');
+    if (recordedRef.current) return;
+    recordedRef.current = true;
+    const c = countsRef.current;
+    const total = c.again + c.hard + c.good + c.easy;
+    const correct = c.hard + c.good + c.easy;
+    if (total > 0) void recordSession({ total, correct }, Date.now()).then(setOutcome);
+  }, []);
 
   useEffect(() => {
     void getAllCards().then((cards) => {
@@ -74,6 +91,8 @@ export default function ReviewScreen() {
       setDone(0);
       setCounts({ again: 0, hard: 0, good: 0, easy: 0 });
       setFlipped(false);
+      setOutcome(null);
+      recordedRef.current = false;
       setEndsAt(twoMin ? now + TWO_MIN_MS : null);
       setPhase('run');
     },
@@ -90,10 +109,10 @@ export default function ReviewScreen() {
     if (phase !== 'run' || endsAt == null) return;
     const iv = setInterval(() => {
       setTick((x) => x + 1);
-      if (Date.now() >= endsAt) setPhase('done');
+      if (Date.now() >= endsAt) finish();
     }, 500);
     return () => clearInterval(iv);
-  }, [phase, endsAt]);
+  }, [phase, endsAt, finish]);
 
   const current = queue[0];
 
@@ -122,9 +141,9 @@ export default function ReviewScreen() {
         return rating === 'again' ? [...rest, updated] : rest;
       });
       if (rating !== 'again') setDone((d) => d + 1);
-      if (queue.length === 1 && rating !== 'again') setPhase('done');
+      if (queue.length === 1 && rating !== 'again') finish();
     },
-    [current, queue.length],
+    [current, queue.length, finish],
   );
 
   // Phím tắt kiểu Anki: Space lật, 1-4 chấm
@@ -205,6 +224,17 @@ export default function ReviewScreen() {
               {t('rateAgain')} {counts.again} · {t('rateHard')} {counts.hard} · {t('rateGood')}{' '}
               {counts.good} · {t('rateEasy')} {counts.easy}
             </p>
+            {outcome && outcome.earnedXp > 0 && (
+              <p className="tabular" style={{ fontWeight: 600 }}>
+                {t('xpEarned', { n: outcome.earnedXp })} · {t('streakNow', { n: outcome.streak })}
+              </p>
+            )}
+            {outcome?.freezeUsed && <p className="text-2">{t('freezeSaved')}</p>}
+            {outcome?.badges.map((b) => (
+              <p key={b.id} style={{ fontWeight: 600 }}>
+                {b.icon} {t('badgeNew', { name: t(`badge_${b.id}` as Parameters<typeof t>[0]) })}
+              </p>
+            ))}
             <div className="row" style={{ marginTop: 12 }}>
               {stillDue > 0 && (
                 <button
@@ -239,7 +269,7 @@ export default function ReviewScreen() {
     <div className="session-full">
       <div className="session-inner">
         <div className="session-top">
-          <button onClick={() => setPhase('done')} aria-label={t('formCancel')}>
+          <button onClick={finish} aria-label={t('formCancel')}>
             ✕
           </button>
           <div className="session-bar">

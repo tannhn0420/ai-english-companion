@@ -26,6 +26,7 @@
 | V10 | Confusable pairs | Cặp từ hay nhầm (affect/effect, lend/borrow): list tuyển chọn + cloze phân biệt | 3 | S | 0 | `icebox` |
 | V11 | Idiom / phrasal verb of the day | 1 idiom mỗi ngày trên Home, lưu vào deck 1 chạm | 2 | S | $ | `icebox` |
 | V12 | Gắn audio người thật hàng loạt | Quét deck, tải audio Wiktionary cho thẻ chưa có (DATA.md §4) | 3 | S | 0 | `backlog` |
+| V13 | Starter packs NGSL | "Gói từ khởi động": N từ NGSL band kế tiếp chưa có trong sổ → thẻ mới mỗi ngày (0 token, data sẵn). Nảy ra khi user tưởng bundle là deck (2026-08-13) | 3 | S | 0 | `icebox` |
 
 ## 2. Nghe
 
@@ -96,7 +97,7 @@
 | I2 | Hosting Cloudflare Pages + Worker proxy VOA | Free, nhanh, Worker giải quyết CORS (DATA.md §5a) | 4 | S | 0 | `phase-0` (Pages) / `phase-5` (Worker) |
 | I3 | CI GitHub Actions (lint + test) | Chạy từ khi có unit tests Phase 1 | 3 | S | 0 | `backlog` |
 | I4 | Auto-backup | Nhắc export định kỳ; desktop dùng File System Access API ghi thẳng file backup | 4 | S | 0 | `backlog` |
-| I5 | Supabase sync + Web Push | 2 chiều extension ↔ app | 4 | L | 0 | `phase-8` |
+| I5 | Supabase sync + Web Push | 2 chiều extension ↔ app | 5 | L | 0 | `phase-8` (M1.5 — ngay sau Phase 3) |
 | I6 | Local neural TTS (Kokoro WebGPU ~80MB) | Chỉ nếu Web Speech không đủ; đánh giá sau Phase 5 | 2 | L | 0 | `icebox` |
 | I7 | FVDP EN-VI offline | GPL — chỉ quyết lại nếu thiếu nghĩa VI thật sự | 2 | M | 0 | `icebox` |
 

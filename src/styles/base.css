@@ -552,6 +552,58 @@ textarea.input {
   font-weight: var(--w-em);
 }
 
+/* ===== Progress ===== */
+
+.xpbar {
+  height: 8px;
+  background: var(--bg-2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.xpbar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+.heat {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.heat i {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
+.badges {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.badge {
+  padding: 8px 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+}
+
+.badge.off {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+.statrow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
 .hero-line {
   font-size: var(--fs-hero);
   font-weight: var(--w-display);

@@ -1,23 +1,38 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { levelOf } from '../../core/gamification';
+import { dayKey } from '../../core/dayKey';
 import { countCards, countDue } from '../../services/db';
+import { loadGamify } from '../../services/gamify';
+import { getSettings } from '../../services/settings';
 import { useI18n } from '../../i18n';
 
-/**
- * Home kiểu widget (DESIGN.md §4.1) — do đọc/đếm trực tiếp từ IndexedDB.
- * Streak/level nối vào ở Phase 3. Signature .hl chỉ dùng ở hero (D14).
- */
+/** Home kiểu widget (DESIGN.md §4.1) — số liệu thật từ IndexedDB + gamify. */
 export default function HomeScreen() {
   const { t } = useI18n();
   const [total, setTotal] = useState<number | null>(null);
   const [due, setDue] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [todayDone, setTodayDone] = useState(0);
+  const goal = getSettings().dailyGoal;
 
   useEffect(() => {
+    const now = Date.now();
     let alive = true;
-    void Promise.all([countCards(), countDue(Date.now())]).then(([c, d]) => {
-      if (alive) {
-        setTotal(c);
-        setDue(d);
+    void Promise.all([countCards(), countDue(now), loadGamify(now)]).then(([c, d, g]) => {
+      if (!alive) return;
+      setTotal(c);
+      setDue(d);
+      setStreak(g.streak);
+      setLevel(levelOf(g.xp).level);
+      setTodayDone(g.days[dayKey(now)]?.attempts ?? 0);
+      // Badge số thẻ đến hạn trên icon app (nếu trình duyệt hỗ trợ)
+      try {
+        if (d > 0) void navigator.setAppBadge?.(d);
+        else void navigator.clearAppBadge?.();
+      } catch {
+        /* không hỗ trợ — bỏ qua */
       }
     });
     return () => {
@@ -29,15 +44,19 @@ export default function HomeScreen() {
 
   return (
     <div>
-      <div className="hub-item tabular" style={{ marginBottom: 16 }}>
-        <span title="Streak — Phase 3">🔥 —</span>
-        <span title="Level — Phase 3">⭐ Lv —</span>
+      <Link
+        to="/progress"
+        className="hub-item tabular"
+        style={{ marginBottom: 16, color: 'inherit' }}
+      >
+        <span>🔥 {streak}</span>
+        <span>⭐ Lv {level}</span>
         {total !== null && total > 0 && (
           <span className="text-2" style={{ marginLeft: 'auto', fontSize: 13 }}>
-            {t('homeTotal', { n: total })}
+            {t('homeTotal', { n: total })} →
           </span>
         )}
-      </div>
+      </Link>
 
       <div className="card" style={{ marginBottom: 16 }}>
         {empty ? (
@@ -71,6 +90,12 @@ export default function HomeScreen() {
                 {t('homeTwoMin')}
               </Link>
             )}
+            <div className="xpbar" style={{ marginTop: 12 }}>
+              <i style={{ width: `${Math.min(100, (todayDone / goal) * 100)}%` }} />
+            </div>
+            <p className="text-2 tabular" style={{ margin: '6px 0 0', fontSize: 13 }}>
+              {t('goalToday', { done: todayDone, goal })}
+            </p>
           </>
         )}
       </div>

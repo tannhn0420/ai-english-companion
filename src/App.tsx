@@ -4,6 +4,7 @@ import DeckScreen from './screens/Deck/DeckScreen';
 import HomeScreen from './screens/Home/HomeScreen';
 import StudyHub from './screens/Study/StudyHub';
 import PracticeHub from './screens/Practice/PracticeHub';
+import ProgressScreen from './screens/Progress/ProgressScreen';
 import QuizScreen from './screens/Quiz/QuizScreen';
 import ReviewScreen from './screens/Review/ReviewScreen';
 import SettingsScreen from './screens/Settings/SettingsScreen';
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/review" element={<ReviewScreen />} />
             <Route path="/quiz" element={<QuizScreen />} />
+            <Route path="/progress" element={<ProgressScreen />} />
             <Route path="*" element={<ComingSoon titleKey="notFoundTitle" />} />
           </Routes>
         </main>

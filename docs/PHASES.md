@@ -4,15 +4,16 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🚧 Phase 2 — code xong (Review FSRS + Quiz/Cloze). Chờ AC test tay của Phase 1 (round-trip file với extension) + Phase 2 (ôn 10 thẻ offline trên điện thoại). Tiếp theo: Phase 3 — Gamification.**
+**Trạng thái hiện tại: 🎉 M1 (Phase 0–3) code xong — MVP hoàn chỉnh. Chờ AC test tay: round-trip file với extension (P1), ôn 10 thẻ offline trên điện thoại (P2), streak 2 ngày liên tiếp (P3). Tiếp theo: Phase 8 — Cloud Sync (M1.5, đã kéo lên).**
 
 ## Tổng quan Milestones
 
 | Milestone | Phases | Chủ đề | Ước lượng |
 |---|---|---|---|
 | **M1 — Dùng được hằng ngày** 🎯 | 0–3 | PWA + deck + FSRS + gamification (= MVP) | ~8–10 buổi |
+| **M1.5 — Đồng bộ** ⬆ | 8 | Supabase sync + push — **kéo lên sớm** (quyết định 2026-08-13: ma sát máy tính ↔ điện thoại xuất hiện ngay tuần đầu dùng thật) | ~4–5 buổi |
 | **M2 — Nội dung & AI** | 4–6 | Practice packs, VOA nghe/đọc song ngữ, dictation | ~7–9 buổi |
-| **M3 — Nói & Cloud** | 7–8 | Speaking (STT/iOS fallback), Supabase sync, push | ~7–8 buổi |
+| **M3 — Nói** | 7 | Speaking (STT / iOS fallback) | ~3 buổi |
 | **M4 — Kỹ năng chủ động** | 9–10 | Viết + sổ tay lỗi, hội thoại nhiệm vụ | ~6 buổi |
 
 Checkpoint bắt buộc giữa các milestone: **dùng thật ≥ 1 tuần**, rà lại backlog/icebox trong IDEAS.md, được phép đổi thứ tự phase còn lại (kể cả kéo Phase 9 lên trước Phase 7 nếu nhu cầu viết > nói).
@@ -86,12 +87,13 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ## Phase 3 — Gamification & Progress (~2 buổi) → 🎉 MVP hoàn chỉnh
 
-- [ ] `core/gamification.ts`: port XP/level/badges/streak từ PracticeApp (giữ nguyên key `meta` như §3.2).
-- [ ] Cộng XP khi hoàn thành phiên Review/Quiz; update streak theo ngày (timezone local).
-- [ ] Màn hình **Progress**: level + XP bar, streak, badges, heatmap tháng (`practiceDays`), thống kê deck (tổng/đã thuộc/đến hạn).
-- [ ] Home hoàn thiện: streak ring, daily goal (số thẻ/ngày), lời nhắc khi mở app nếu có thẻ đến hạn, Badging API.
-- [ ] Streak freeze: tự bảo streak 1 lần/tuần khi lỡ 1 ngày (giữ loss-aversion nhưng không trừng phạt — KHÔNG làm leagues/bảng xếp hạng).
-- [ ] Summary cuối phiên: XP kiếm được, thẻ đúng/sai, streak.
+- [x] `core/gamification.ts`: cùng mô hình DẪN XUẤT với ProgressApp extension (xp = words×5 + attempts×3, 500 XP/cấp; streak tính lùi từ `practiceDays`; badges predicate) — key/shape meta giữ nguyên. 8 unit tests.
+- [x] `recordSession` gọi đúng 1 lần cuối phiên Review/Quiz (mọi lối ra: hết thẻ / hết giờ / thoát tay); streak theo ngày local.
+- [x] Màn hình **Progress**: level + XP bar, streak, badges (10), heatmap 4 tuần, thống kê deck, top từ hay sai.
+- [x] Home hoàn thiện: streak + level thật (chạm → Progress), daily goal bar, Badging API (số thẻ due trên icon app).
+- [x] Streak freeze: tự vá 1 ngày lỡ, tối đa 1 lần/7 ngày (chuẩn Duolingo: ngày freeze bảo toàn nhưng không +1) — KHÔNG leagues (D9).
+- [x] Summary cuối phiên: +XP, streak, thông báo freeze đã dùng, badge mới đạt.
+- [x] `weakWords` đổi về đúng shape extension `{misses, attempts}`; quiz/cloze ghi cả lượt đúng lẫn sai.
 
 **Acceptance criteria:**
 - Học 2 ngày liên tiếp → streak = 2; bỏ 1 ngày → reset (đúng logic extension).
@@ -161,7 +163,7 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ---
 
-## Phase 8 — Cloud Sync + Push (~4-5 buổi, cần quyết định lại trước khi làm)
+## Phase 8 — Cloud Sync + Push (~4-5 buổi) — ⬆ chạy ngay sau Phase 3 (M1.5)
 
 - [ ] Supabase project: Auth (Google), bảng `cards` + `meta` (RLS theo user), tombstone delete.
 - [ ] Client sync: pull-then-push, last-write-wins theo `updatedAt`; chạy khi mở app + sau mỗi phiên.
