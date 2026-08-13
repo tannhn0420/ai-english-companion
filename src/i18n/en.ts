@@ -151,6 +151,56 @@ export const en: Record<keyof typeof vi, string> = {
   badge_attempts100: '100 reviews',
   badge_attempts500: '500 reviews',
 
+  // Practice packs (AI)
+  practiceVocabTest: 'Vocab size test (2 min)',
+  practiceNeedKey: 'AI features need an API key (Gemini/Groq have free tiers) —',
+  practiceTopicPh: 'Topic to practice (e.g. job interview)…',
+  practiceGo: 'Generate',
+  practiceLoading: 'Writing your "{topic}" pack…',
+  practiceWeakTopic: 'Review my tricky words',
+  practiceWeakChip: 'Tricky words ({n})',
+  practiceSave: 'Save to wordbook',
+  practiceTabVocab: 'Vocab',
+  practiceTabPhrases: 'Phrases',
+  practiceTabDialogue: 'Dialogue',
+  practiceTabPassage: 'Monologue',
+  level_beginner: 'Beginner',
+  level_intermediate: 'Intermediate',
+  level_advanced: 'Advanced',
+
+  // Vocab size test
+  vtHint: 'Do you know what this word means? Be honest — this only tunes difficulty for you.',
+  vtKnow: 'I know it',
+  vtDontKnow: 'Not sure',
+  vtResult: 'Estimated vocabulary: ~{n} words',
+  vtLevelSet: 'Practice difficulty set to {level}. Retake anytime in Settings.',
+
+  // Translate-back
+  quizModeTranslate: 'Translate VI→EN',
+  tbYourEnglish: 'Write your English sentence…',
+  tbCompare: 'Compare with reference',
+  tbYours: 'Yours:',
+  tbReference: 'Reference (Tatoeba):',
+  tbSelfGrade: 'Self-grade: does your meaning and grammar match?',
+  tbGood: 'Got it ✓',
+  tbBad: 'Not quite',
+
+  // Home extras
+  homePasteClipboard: '📋 Paste from clipboard → new card',
+
+  // Settings: AI + Learning
+  settingsAiTitle: 'AI (practice generation)',
+  settingsAiHint: 'Your key stays on this device, never syncs, and is only sent to the provider you pick. Gemini/Groq have free tiers.',
+  settingsAiProvider: 'Provider',
+  settingsAiModel: 'Model (empty = default)',
+  settingsAiValidate: '🔑 Test key',
+  settingsAiKeyOk: 'Key works ✓',
+  settingsAiKeyBad: 'Key failed — double-check it',
+  settingsLearningTitle: 'Learning',
+  settingsDailyGoal: 'Daily review goal',
+  settingsLevel: 'Practice difficulty',
+  settingsVocabTest: '🧪 Vocab test',
+
   // Sync (Supabase)
   syncTitle: 'Sync across devices',
   syncHint: 'Sign in to sync your wordbook and progress between computer and phone. Optional — without an account everything stays on this device.',

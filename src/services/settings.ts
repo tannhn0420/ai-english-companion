@@ -7,8 +7,15 @@ export interface AppSettings {
   ttsVoiceEn: string; // voiceURI ưu tiên; '' = tự chọn giọng tự nhiên nhất
   ttsVoiceVi: string;
   ttsRate: number;
-  dailyGoal: number; // số thẻ mục tiêu/ngày (dùng từ Phase 3)
+  dailyGoal: number; // số thẻ mục tiêu/ngày
   reviewAutoSpeak: boolean; // tự đọc term khi hiện thẻ mới trong phiên ôn
+  // AI (Phase 4) — key chỉ nằm localStorage, không bao giờ sync (R4/§12)
+  aiProvider: 'gemini' | 'groq' | 'openrouter' | 'openai';
+  aiKey: string;
+  aiModel: string; // '' = model mặc định theo provider (tier cheap)
+  aiModelGood: string; // '' = dùng aiModel (tier good)
+  aiBaseUrl: string; // chỉ dùng cho provider 'openai' (endpoint tự host)
+  practiceLevel: string; // beginner | intermediate | advanced (vocab test set mặc định)
 }
 
 const KEY = 'aec-settings';
@@ -19,6 +26,12 @@ const DEFAULTS: AppSettings = {
   ttsRate: 0.95,
   dailyGoal: 10,
   reviewAutoSpeak: true,
+  aiProvider: 'gemini',
+  aiKey: '',
+  aiModel: '',
+  aiModelGood: '',
+  aiBaseUrl: '',
+  practiceLevel: 'intermediate',
 };
 
 export function getSettings(): AppSettings {

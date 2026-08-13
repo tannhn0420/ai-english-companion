@@ -129,6 +129,31 @@ export async function countDue(now: number): Promise<number> {
   return db.countFromIndex('cards', 'due', IDBKeyRange.upperBound(now));
 }
 
+// ---- Practice packs (cache vĩnh viễn — mở lại 0 token) ----
+
+export interface PackEntry {
+  key: string;
+  pack: PracticePack;
+  level: string;
+  createdAt: number;
+}
+
+export async function getPack(key: string): Promise<PackEntry | undefined> {
+  const db = await getDb();
+  return db.get('packs', key) as Promise<PackEntry | undefined>;
+}
+
+export async function putPack(entry: PackEntry): Promise<void> {
+  const db = await getDb();
+  await db.put('packs', entry);
+}
+
+export async function listPacks(limit = 8): Promise<PackEntry[]> {
+  const db = await getDb();
+  const all = (await db.getAll('packs')) as PackEntry[];
+  return all.sort((a, b) => b.createdAt - a.createdAt).slice(0, limit);
+}
+
 // ---- Dict cache ----
 
 export async function getDictEntry(term: string): Promise<DictEntry | undefined> {

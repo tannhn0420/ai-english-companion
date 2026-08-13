@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { levelOf } from '../../core/gamification';
 import { dayKey } from '../../core/dayKey';
 import { countCards, countDue } from '../../services/db';
@@ -10,6 +10,7 @@ import { useI18n } from '../../i18n';
 /** Home kiểu widget (DESIGN.md §4.1) — số liệu thật từ IndexedDB + gamify. */
 export default function HomeScreen() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [total, setTotal] = useState<number | null>(null);
   const [due, setDue] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -110,6 +111,32 @@ export default function HomeScreen() {
           <span className="hub-item__label">{t('deckTitle')}</span>
         </Link>
       </div>
+
+      {'clipboard' in navigator && typeof navigator.clipboard.readText === 'function' && (
+        <button
+          className="btn"
+          style={{ width: '100%', marginTop: 12 }}
+          onClick={() => {
+            void navigator.clipboard
+              .readText()
+              .then((v) => {
+                const term = v.trim().slice(0, 120);
+                if (!term) return;
+                try {
+                  sessionStorage.setItem('aec-add-term', term);
+                } catch {
+                  /* ignore */
+                }
+                navigate('/deck');
+              })
+              .catch(() => {
+                /* user từ chối quyền — thôi */
+              });
+          }}
+        >
+          {t('homePasteClipboard')}
+        </button>
+      )}
     </div>
   );
 }

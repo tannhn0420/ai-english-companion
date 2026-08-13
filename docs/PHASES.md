@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🚧 Phase 8 (M1.5) — sync code xong, chờ chủ dự án chạy `supabase/schema.sql` + set Site URL rồi test 2 thiết bị. Còn lại trong phase: Web Push + sync phía extension. Tiếp theo sau đó: M2 (Phase 4).**
+**Trạng thái hiện tại: 🚧 M2 — Phase 4 (AI Practice) code xong. Nợ lại từ Phase 8: Web Push + sync phía extension. Tiếp theo: Phase 5 — Listen/VOA (cần chốt D11 Worker proxy đầu phase).**
 
 ## Tổng quan Milestones
 
@@ -104,13 +104,14 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ## Phase 4 — AI Practice Packs (~3 buổi)
 
-- [ ] `services/ai/`: port gemini.ts + openai.ts (Groq/OpenRouter/OpenAI-compat), provider switch trong Settings + validate key; **model routing theo tier** (`cheap`/`good` — ARCHITECTURE §4.2).
-- [ ] `prompts.ts`: port templates GENERATE_PRACTICE, GENERATE_DRILL từ background extension; sửa theo **generate-once-use-many** (1 call ra pack + quiz + dịch VI đầy đủ).
-- [ ] Màn hình **Practice**: nhập chủ đề + level → pack (tabs vocab/phrases/dialogue/passage), cache vào `db.packs`, danh sách recent packs.
-- [ ] Daily challenge topic (port `dailyTopic()`), luyện từ weak words, lưu từ trong pack vào deck 1 chạm.
-- [ ] **Vocab size test** (onboarding + chạy lại trong Settings): sampling ~50 từ theo band NGSL, chọn "biết/không" → ước lượng vốn từ, set level mặc định cho AI.
-- [ ] **Web Share Target** (Android): share từ/đoạn từ app khác → mở form tạo thẻ (auto-fill Phase 1 + AI enrich nếu là cụm/câu). iOS không hỗ trợ share target → nút "Dán từ clipboard" trên Home.
-- [ ] **Translate-back** (IDEAS W2): hiện câu VI của cặp Tatoeba → user viết bản EN → so bản gốc, tự chấm kiểu Anki (0 token, luyện production).
+- [x] `services/ai/client.ts`: 4 provider (Gemini/Groq/OpenRouter/OpenAI-compat), lỗi tiếng Việt port từ extension, **tier routing** `cheap`/`good` (aiModelGood override); key chỉ localStorage, không sync.
+- [x] `prompts.ts`: PRACTICE_SYSTEM_PROMPT + TEMPLATE port nguyên văn (pack đã generate-once: vocab+phrases+dialogue+passage kèm VI — nuôi Listen/Dictation sau); GENERATE_DRILL để Phase 7.
+- [x] Màn hình **Practice** (`/practice/topic`): chủ đề + level chips → pack 4 tabs, cache vĩnh viễn `db.packs` (mở lại 0 token), recent chips; parse qua `core/aiJson` (extractJson + normalizePack, có tests).
+- [x] Daily topic (port `dailyTopic`, 30 chủ đề), chip "Từ hay sai (n)" sinh pack từ weakWords, ＋ lưu từ vào sổ 1 chạm (dedupe với deck).
+- [x] **Vocab size test** (`/vocabtest`): 36 từ sampling 3 band NGSL → ước lượng vốn từ, tự set độ khó (settings.practiceLevel); vào lại từ Settings → Học tập.
+- [x] **Web Share Target** (Android, manifest `/share`) + nút "Dán từ clipboard" (Home) → prefill form thêm thẻ trong Sổ từ.
+- [x] **Translate-back** (IDEAS W2): mode thứ 3 trong Quiz — câu VI Tatoeba → viết EN → so bản gốc + tự chấm, 0 token, tính vào XP/streak.
+- [x] Settings: section AI (provider/key/model/validate) + Học tập (mục tiêu ngày, độ khó, test vốn từ).
 
 **Acceptance criteria:**
 - Sinh pack trên 4G ở điện thoại < 15s, mở lại pack cũ tức thì (cache, không tốn token); 1 pack = đúng 1 call AI.

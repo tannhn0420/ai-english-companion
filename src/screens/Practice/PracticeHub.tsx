@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom';
 import { useI18n, type MsgKey } from '../../i18n';
 
-const MODES: { icon: string; label: MsgKey; phase: string }[] = [
-  { icon: '🎙️', label: 'practiceTopic', phase: 'Phase 4' },
+const MODES: { icon: string; label: MsgKey; phase?: string; to?: string }[] = [
+  { icon: '🎙️', label: 'practiceTopic', to: '/practice/topic' },
+  { icon: '🧪', label: 'practiceVocabTest', to: '/vocabtest' },
   { icon: '🎧', label: 'practiceListen', phase: 'Phase 5' },
   { icon: '✍️', label: 'practiceDictation', phase: 'Phase 6' },
   { icon: '🗣️', label: 'practiceSpeaking', phase: 'Phase 7' },
@@ -15,13 +17,20 @@ export default function PracticeHub() {
     <div>
       <h1 className="screen-title">{t('practiceTitle')}</h1>
       <div className="hub-list">
-        {MODES.map((m) => (
-          <div key={m.label} className="card hub-item" aria-disabled>
-            <span aria-hidden>{m.icon}</span>
-            <span className="hub-item__label">{t(m.label)}</span>
-            <span className="badge-soon">{m.phase}</span>
-          </div>
-        ))}
+        {MODES.map((m) =>
+          m.to ? (
+            <Link key={m.label} to={m.to} className="card hub-item">
+              <span aria-hidden>{m.icon}</span>
+              <span className="hub-item__label">{t(m.label)}</span>
+            </Link>
+          ) : (
+            <div key={m.label} className="card hub-item" aria-disabled>
+              <span aria-hidden>{m.icon}</span>
+              <span className="hub-item__label">{t(m.label)}</span>
+              <span className="badge-soon">{m.phase}</span>
+            </div>
+          ),
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
 import { normalizeImported, parseImport, serialize } from '../../core/importExport';
+import { PROVIDER_DEFAULT_MODEL, validateKey } from '../../services/ai/client';
 import { getManifest, type BundleManifest } from '../../services/dataBundle';
 import { download } from '../../services/download';
 import { getSettings, saveSettings, type AppSettings } from '../../services/settings';
@@ -327,17 +329,96 @@ export default function SettingsScreen() {
         )}
       </div>
 
-      {(
-        [
-          ['settingsAI', 'Phase 4'],
-          ['settingsLearning', 'Phase 3'],
-        ] as [MsgKey, string][]
-      ).map(([label, phase]) => (
-        <div key={label} className="card hub-item" style={{ marginBottom: 12 }} aria-disabled>
-          <span className="hub-item__label">{t(label)}</span>
-          <span className="badge-soon">{phase}</span>
+      <div className="card" style={{ marginBottom: 12 }}>
+        <h3>{t('settingsAiTitle')}</h3>
+        <p className="text-2" style={{ marginTop: 0, fontSize: 13 }}>
+          {t('settingsAiHint')}
+        </p>
+        <div className="field">
+          <label>{t('settingsAiProvider')}</label>
+          <select
+            className="input"
+            value={settings.aiProvider}
+            onChange={(e) =>
+              patch({ aiProvider: e.target.value as AppSettings['aiProvider'], aiKey: '' })
+            }
+          >
+            <option value="gemini">Google Gemini</option>
+            <option value="groq">Groq</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="openai">OpenAI / tự host</option>
+          </select>
         </div>
-      ))}
+        <div className="field">
+          <label>API key</label>
+          <input
+            className="input"
+            type="password"
+            value={settings.aiKey}
+            onChange={(e) => patch({ aiKey: e.target.value.trim() })}
+            autoComplete="off"
+          />
+        </div>
+        <div className="field">
+          <label>{t('settingsAiModel')}</label>
+          <input
+            className="input"
+            value={settings.aiModel}
+            onChange={(e) => patch({ aiModel: e.target.value })}
+            placeholder={PROVIDER_DEFAULT_MODEL[settings.aiProvider]}
+          />
+        </div>
+        {settings.aiProvider === 'openai' && (
+          <div className="field">
+            <label>Base URL</label>
+            <input
+              className="input"
+              value={settings.aiBaseUrl}
+              onChange={(e) => patch({ aiBaseUrl: e.target.value.trim() })}
+              placeholder="https://api.openai.com/v1"
+            />
+          </div>
+        )}
+        <button
+          className="btn"
+          disabled={!settings.aiKey || syncBusy}
+          onClick={() => {
+            setSyncBusy(true);
+            void validateKey().then((ok) => {
+              setSyncBusy(false);
+              showToast(ok ? t('settingsAiKeyOk') : t('settingsAiKeyBad'));
+            });
+          }}
+        >
+          {t('settingsAiValidate')}
+        </button>
+      </div>
+
+      <div className="card" style={{ marginBottom: 12 }}>
+        <h3>{t('settingsLearningTitle')}</h3>
+        <div className="hub-item">
+          <span className="hub-item__label">{t('settingsDailyGoal')}</span>
+          <input
+            className="input"
+            type="number"
+            min={5}
+            max={200}
+            step={5}
+            style={{ width: 90 }}
+            value={settings.dailyGoal}
+            onChange={(e) => patch({ dailyGoal: Math.max(1, Number(e.target.value) || 10) })}
+          />
+        </div>
+        <div className="hub-item">
+          <span className="hub-item__label">
+            {t('settingsLevel')}:{' '}
+            <b>{t(`level_${settings.practiceLevel}` as MsgKey)}</b>
+          </span>
+          <Link to="/vocabtest" className="badge-soon">
+            {t('settingsVocabTest')}
+          </Link>
+        </div>
+      </div>
 
       <details className="card" style={{ marginBottom: 12 }}>
         <summary style={{ fontWeight: 600, cursor: 'pointer' }}>{t('settingsCredits')}</summary>

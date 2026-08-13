@@ -152,6 +152,56 @@ export const vi = {
   badge_attempts100: '100 lượt ôn',
   badge_attempts500: '500 lượt ôn',
 
+  // Practice packs (AI)
+  practiceVocabTest: 'Kiểm tra vốn từ (2 phút)',
+  practiceNeedKey: 'Tính năng AI cần API key (miễn phí với Gemini/Groq) —',
+  practiceTopicPh: 'Chủ đề muốn luyện (vd: phỏng vấn xin việc)…',
+  practiceGo: 'Tạo bài luyện',
+  practiceLoading: 'Đang soạn bài về "{topic}"…',
+  practiceWeakTopic: 'Ôn lại các từ hay sai của tôi',
+  practiceWeakChip: 'Từ hay sai ({n})',
+  practiceSave: 'Lưu vào sổ từ',
+  practiceTabVocab: 'Từ vựng',
+  practiceTabPhrases: 'Mẫu câu',
+  practiceTabDialogue: 'Hội thoại',
+  practiceTabPassage: 'Bài nói',
+  level_beginner: 'Cơ bản',
+  level_intermediate: 'Trung cấp',
+  level_advanced: 'Nâng cao',
+
+  // Vocab size test
+  vtHint: 'Bạn có biết nghĩa của từ này không? Thành thật nhé — kết quả chỉ để chỉnh độ khó cho bạn.',
+  vtKnow: 'Biết',
+  vtDontKnow: 'Chưa chắc',
+  vtResult: 'Vốn từ ước lượng: ~{n} từ',
+  vtLevelSet: 'Độ khó bài luyện đã đặt: {level}. Có thể làm lại test trong Cài đặt.',
+
+  // Translate-back
+  quizModeTranslate: 'Dịch ngược VI→EN',
+  tbYourEnglish: 'Viết câu tiếng Anh của bạn…',
+  tbCompare: 'So với bản gốc',
+  tbYours: 'Câu của bạn:',
+  tbReference: 'Bản gốc (Tatoeba):',
+  tbSelfGrade: 'Tự chấm: ý và ngữ pháp của bạn có khớp bản gốc không?',
+  tbGood: 'Đạt ✓',
+  tbBad: 'Chưa đạt',
+
+  // Home extras
+  homePasteClipboard: '📋 Dán từ clipboard → tạo thẻ',
+
+  // Settings: AI + Learning
+  settingsAiTitle: 'AI (tạo bài luyện)',
+  settingsAiHint: 'Key chỉ nằm trên máy này, không sync, chỉ gửi đến đúng provider bạn chọn. Gemini/Groq có bậc miễn phí.',
+  settingsAiProvider: 'Provider',
+  settingsAiModel: 'Model (trống = mặc định)',
+  settingsAiValidate: '🔑 Kiểm tra key',
+  settingsAiKeyOk: 'Key hoạt động ✓',
+  settingsAiKeyBad: 'Key không hoạt động — kiểm tra lại',
+  settingsLearningTitle: 'Học tập',
+  settingsDailyGoal: 'Mục tiêu lượt ôn/ngày',
+  settingsLevel: 'Độ khó bài luyện',
+  settingsVocabTest: '🧪 Test vốn từ',
+
   // Sync (Supabase)
   syncTitle: 'Đồng bộ giữa các thiết bị',
   syncHint: 'Đăng nhập để sổ từ và tiến độ tự đồng bộ giữa máy tính và điện thoại. Không bắt buộc — chưa đăng nhập thì mọi thứ vẫn nằm trên máy này.',

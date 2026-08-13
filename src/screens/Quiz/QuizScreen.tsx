@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { buildCloze, type ClozeQ, type SentenceDeps } from '../../core/cloze';
+import { buildCloze, type ClozeQ, type SentenceDeps, type SentencePair } from '../../core/cloze';
 import { buildQuiz, type QuizQ } from '../../core/quiz';
 import { getDueCards } from '../../core/srs';
 import type { VocabCard } from '../../core/types';
@@ -11,7 +11,7 @@ import { bumpWeakWord } from '../../services/stats';
 import { speak } from '../../services/tts';
 import { useI18n } from '../../i18n';
 
-type Mode = 'mcq' | 'cloze';
+type Mode = 'mcq' | 'cloze' | 'translate';
 type Source = 'due' | 'all';
 type Phase = 'setup' | 'run' | 'done';
 
@@ -30,6 +30,8 @@ export default function QuizScreen() {
 
   const [mcqs, setMcqs] = useState<QuizQ[]>([]);
   const [clozes, setClozes] = useState<ClozeQ[]>([]);
+  const [trPairs, setTrPairs] = useState<SentencePair[]>([]);
+  const [trShown, setTrShown] = useState(false);
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
@@ -59,6 +61,13 @@ export default function QuizScreen() {
       const qs = buildQuiz(pool, { size: SIZE });
       if (qs.length === 0) return;
       setMcqs(qs);
+    } else if (mode === 'translate') {
+      // Dịch ngược VI→EN từ cặp câu Tatoeba (0 token — IDEAS W2)
+      if (!deps) return;
+      const pairs = [...deps.pairs].sort(() => 0.5 - Math.random()).slice(0, SIZE);
+      if (pairs.length === 0) return;
+      setTrPairs(pairs);
+      setTrShown(false);
     } else {
       const qs: ClozeQ[] = [];
       for (const c of pool) {
@@ -124,7 +133,19 @@ export default function QuizScreen() {
     else setIdx(idx + 1);
   }
 
-  const total = mode === 'mcq' ? mcqs.length : clozes.length;
+  // ---- Translate-back ----
+
+  const tp = trPairs[idx];
+
+  function gradeTranslate(ok: boolean) {
+    if (ok) setScore((s) => s + 1);
+    setTrShown(false);
+    setInput('');
+    if (idx + 1 >= trPairs.length) finish(trPairs.length, score + (ok ? 1 : 0));
+    else setIdx(idx + 1);
+  }
+
+  const total = mode === 'mcq' ? mcqs.length : mode === 'translate' ? trPairs.length : clozes.length;
 
   // ---- render ----
 
@@ -142,6 +163,12 @@ export default function QuizScreen() {
             onClick={() => setMode('cloze')}
           >
             {t('quizModeCloze')}
+          </button>
+          <button
+            className={`chip${mode === 'translate' ? ' active' : ''}`}
+            onClick={() => setMode('translate')}
+          >
+            {t('quizModeTranslate')}
           </button>
         </div>
         <div className="chips">
@@ -243,6 +270,76 @@ export default function QuizScreen() {
               );
             })}
             <p className="text-2 tabular" style={{ textAlign: 'center' }}>
+              {t('quizScore', { right: score, total })}
+            </p>
+          </div>
+        )}
+
+        {mode === 'translate' && tp && (
+          <div>
+            <div className="card" style={{ marginBottom: 14 }}>
+              <p className="cloze-sentence">{tp.vi}</p>
+              <p className="fc__src">
+                <a
+                  href={`https://tatoeba.org/en/sentences/show/${tp.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {t('clozeSourceTatoeba')} #{tp.id}
+                </a>
+              </p>
+            </div>
+
+            {!trShown ? (
+              <>
+                <textarea
+                  className="input"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={t('tbYourEnglish')}
+                  autoFocus
+                  rows={2}
+                />
+                <button
+                  className="btn-primary"
+                  style={{ marginTop: 10 }}
+                  onClick={() => setTrShown(true)}
+                  disabled={!input.trim()}
+                >
+                  {t('tbCompare')}
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="card" style={{ marginBottom: 10 }}>
+                  <p className="text-2" style={{ margin: 0, fontSize: 13 }}>
+                    {t('tbYours')}
+                  </p>
+                  <p style={{ margin: '2px 0 10px' }}>{input}</p>
+                  <p className="text-2" style={{ margin: 0, fontSize: 13 }}>
+                    {t('tbReference')}
+                  </p>
+                  <p style={{ margin: '2px 0 0', fontWeight: 600 }}>
+                    {tp.en}{' '}
+                    <button onClick={() => speak(tp.en, 'en')} aria-label={t('listen')}>
+                      🔊
+                    </button>
+                  </p>
+                </div>
+                <p className="text-2" style={{ fontSize: 13 }}>
+                  {t('tbSelfGrade')}
+                </p>
+                <div className="rate-row" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                  <button className="rate rate--good" onClick={() => gradeTranslate(true)}>
+                    {t('tbGood')}
+                  </button>
+                  <button className="rate rate--again" onClick={() => gradeTranslate(false)}>
+                    {t('tbBad')}
+                  </button>
+                </div>
+              </>
+            )}
+            <p className="text-2 tabular" style={{ textAlign: 'center', marginTop: 10 }}>
               {t('quizScore', { right: score, total })}
             </p>
           </div>

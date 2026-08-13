@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { VocabCard } from '../../core/types';
 import { detectLang, normalizeImported, parseImport, serialize } from '../../core/importExport';
 import { createCard } from '../../core/srs';
@@ -38,6 +38,21 @@ export default function DeckScreen() {
     setToast(msg);
     setTimeout(() => setToast(''), 2500);
   }
+
+  // Prefill từ Share Target (Android) hoặc nút "Dán từ clipboard" (Home)
+  useEffect(() => {
+    try {
+      const shared = sessionStorage.getItem('aec-add-term');
+      if (shared) {
+        sessionStorage.removeItem('aec-add-term');
+        setForm({ ...EMPTY_FORM, term: shared });
+        setDefs([]);
+        setAudio('');
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const topics = useMemo(() => {
     const set = new Set<string>();

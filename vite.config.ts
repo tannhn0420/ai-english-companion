@@ -26,6 +26,12 @@ export default defineConfig({
           { name: 'Ôn ngay', url: '/review', icons: [{ src: 'icons/icon-192.png', sizes: '192x192' }] },
           { name: 'Quiz', url: '/quiz', icons: [{ src: 'icons/icon-192.png', sizes: '192x192' }] },
         ],
+        // Android: share text từ app khác vào app → tạo thẻ nhanh (REQUIREMENTS A8)
+        share_target: {
+          action: '/share',
+          method: 'GET',
+          params: { title: 'title', text: 'text', url: 'url' },
+        },
       },
       workbox: {
         // App shell + bundle data mở (DATA.md §3) — precache nền, offline tra được từ/câu.
