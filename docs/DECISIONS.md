@@ -15,7 +15,7 @@
 | D8 | Schema `VocabCard` tương thích extension 100%, field mới chỉ optional | accepted | 2026-08-12 |
 | D9 | Gamification nhẹ: streak/XP/badges/freeze — KHÔNG leagues | accepted | 2026-08-13 |
 | D10 | FVDP (GPL) chưa dùng | accepted | 2026-08-13 |
-| D11 | Hosting: Cloudflare Pages + Worker proxy cho VOA | proposed | 2026-08-13 |
+| D11 | Hosting: Cloudflare Workers (assets + worker chung 1 deploy, `/api/*` proxy VOA) | accepted | 2026-08-13 |
 | D12 | Mistake Notebook là store trung tâm nối mọi kỹ năng | accepted | 2026-08-13 |
 | D13 | UI song ngữ VI/EN — i18n tự viết, typed, không thư viện | accepted | 2026-08-13 |
 | D14 | Design direction "Sổ từ sống": Be Vietnam Pro + dictionary-entry + marker highlight | accepted | 2026-08-13 |
@@ -68,10 +68,10 @@
 **Bối cảnh:** từ điển EN-VI mở tốt nhất nhưng GPL; bundle data GPL có thể kéo nghĩa vụ license cho app.
 **Quyết định:** nghĩa VI lấy từ Wiktionary/Tatoeba/AI. Chỉ mở lại khi thiếu thật sự — cập nhật mục này trước khi dùng.
 
-## D11 — Hosting: Cloudflare Pages + Worker (proposed)
-**Bối cảnh:** cần host tĩnh miễn phí, nhanh ở VN, HTTPS (bắt buộc cho PWA/SW), và chỗ đặt CORS proxy cho VOA (DATA.md §5a).
-**Đề xuất:** Cloudflare Pages (deploy từ git, free) + 1 Worker stateless cho proxy. Thay thế tương đương: GitHub Pages (không có Worker) / Vercel.
-**Chốt khi:** bắt đầu Phase 0 (Pages) và Phase 5 (Worker).
+## D11 — Hosting: Cloudflare Workers, assets + proxy chung một deploy (accepted)
+**Bối cảnh:** cần host tĩnh miễn phí, HTTPS (bắt buộc PWA/SW), và proxy cho VOA. Thực tế Phase 0 dùng Workers Builds (assets-only). Phase 5 phát hiện thêm: voanews.com **bị chặn/không ổn định từ mạng VN** — proxy edge không chỉ giải quyết CORS mà là đường duy nhất tin cậy.
+**Quyết định:** MỘT deploy duy nhất: `wrangler.jsonc` có `main: worker/index.js` + static assets; `run_worker_first: ["/api/*"]` — `/api/voa/{feed,page,audio}` là proxy stateless whitelist `*.voanews.com` (hỗ trợ Range để seek audio, cache edge 30 phút), mọi path khác là app + SPA fallback. Cùng origin → không CORS. Không lưu trữ gì → không vi phạm D2.
+**Hệ quả:** push `master` → build + deploy cả app lẫn proxy, không có hạ tầng thứ hai phải quản.
 
 ## D13 — UI song ngữ VI/EN, i18n tự viết
 **Bối cảnh:** app cần dùng được bằng cả tiếng Việt (mặc định) và tiếng Anh; chỉ 2 locale, bundle budget chặt (ARCHITECTURE §11).

@@ -4,7 +4,7 @@ import { useI18n, type MsgKey } from '../../i18n';
 const MODES: { icon: string; label: MsgKey; phase?: string; to?: string }[] = [
   { icon: '🎙️', label: 'practiceTopic', to: '/practice/topic' },
   { icon: '🧪', label: 'practiceVocabTest', to: '/vocabtest' },
-  { icon: '🎧', label: 'practiceListen', phase: 'Phase 5' },
+  { icon: '🎧', label: 'practiceListen', to: '/listen' },
   { icon: '✍️', label: 'practiceDictation', phase: 'Phase 6' },
   { icon: '🗣️', label: 'practiceSpeaking', phase: 'Phase 7' },
   { icon: '📔', label: 'practiceJournal', phase: 'Phase 9' },

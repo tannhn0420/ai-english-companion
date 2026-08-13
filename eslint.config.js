@@ -27,4 +27,11 @@ export default tseslint.config(
       globals: globals.node,
     },
   },
+  {
+    // Cloudflare Worker (fetch/Response/Headers/URL như service worker runtime)
+    files: ['worker/**/*.js'],
+    languageOptions: {
+      globals: globals.serviceworker,
+    },
+  },
 );

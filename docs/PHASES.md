@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🚧 M2 — Phase 4 (AI Practice) code xong. Nợ lại từ Phase 8: Web Push + sync phía extension. Tiếp theo: Phase 5 — Listen/VOA (cần chốt D11 Worker proxy đầu phase).**
+**Trạng thái hiện tại: 🚧 M2 — Phase 4 + 5 code xong (AI Practice + Listen/VOA). Nợ lại từ Phase 8: Web Push + sync phía extension. Tiếp theo: Phase 6 — Dictation.**
 
 ## Tổng quan Milestones
 
@@ -122,13 +122,13 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ## Phase 5 — Listen / Audio Mode (~2 buổi)
 
-- [ ] **Quyết định CORS cho VOA** đầu phase (DATA.md §5: Cloudflare Worker proxy / dán thủ công / bundle chọn lọc — khuyến nghị (a)).
-- [ ] Nguồn **VOA Learning English** (public domain, credit VOA): danh sách bài + MP3 đọc chậm; cache offline vào IndexedDB.
-- [ ] `tts.ts` playlist engine: đọc tuần tự passage/dialogue, mode EN-only / EN→VI, gap chỉnh được, tốc độ chỉnh được.
-- [ ] Màn hình **Listen**: chọn bài VOA / pack đã cache → player (play/pause/next/prev câu, highlight câu đang đọc; VOA dùng MP3 gốc thay TTS).
-- [ ] **Đọc song ngữ** (parallel reading): text VOA + bản dịch VI (AI dịch 1 lần theo tier `cheap`, cache); chạm câu để nghe.
-- [ ] Wake Lock khi đang phát; MediaSession metadata (best-effort trên lock screen).
-- [ ] Chế độ "nghe deck": đọc term → nghỉ → meaning cho N thẻ đến hạn (ôn thụ động).
+- [x] **D11 chốt (accepted)**: proxy VOA nhúng vào CHÍNH worker đang serve app (`worker/index.js`, `run_worker_first: ["/api/*"]`) — cùng origin, không CORS; phát hiện voanews.com bị chặn từ mạng VN nên proxy edge là bắt buộc.
+- [x] Nguồn **VOA Learning English**: RSS podcast → danh sách bài; parse bài (Pangea CMS `#article-content`), tách câu (`core/sentences` port từ dictation extension); bài cache IndexedDB (store `articles`, **DB v2 + migration test fixture v1**); MP3 cache SW (CacheFirst + Range) — nghe lại offline.
+- [x] `services/playlist.ts`: TTS playlist engine — EN-only / EN→VI, gap 0.6/1.2/2.5s, prev/play/next, Wake Lock khi phát, MediaSession metadata + action handlers.
+- [x] Màn hình **Listen** (`/listen`): 3 nguồn — VOA (bài + MP3 gốc qua `<audio>`, mục "Đã lưu" offline, dòng credit VOA), Packs (passage/dialogue của pack đã tạo → player TTS), Sổ từ (nghe 20 thẻ due: từ → nghĩa).
+- [x] **Đọc song ngữ**: nút 🌐 dịch cả bài 1 call AI tier `cheap`, lưu vào cache bài; chạm câu để nghe TTS.
+- [x] Wake Lock + MediaSession (best-effort).
+- [x] Chế độ "nghe deck" (ôn thụ động term → nghĩa).
 
 **Acceptance criteria:**
 - Nghe hết 1 passage 10 câu không cần chạm màn hình; pause/resume hoạt động.

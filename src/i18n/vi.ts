@@ -202,6 +202,25 @@ export const vi = {
   settingsLevel: 'Độ khó bài luyện',
   settingsVocabTest: '🧪 Test vốn từ',
 
+  // Listen (Phase 5)
+  listenTitle: 'Nghe',
+  listenVoa: 'VOA',
+  listenPacks: 'Packs',
+  listenDeck: 'Sổ từ',
+  listenLoading: 'Đang tải…',
+  listenFeedErr: 'Không tải được danh sách VOA — kiểm tra mạng, hoặc nghe bài đã lưu bên dưới.',
+  listenSaved: '💾 Đã lưu (nghe offline được)',
+  listenCredit: 'Nguồn: VOA Learning English — public domain, đọc chậm cho người học.',
+  listenTranslate: '🌐 Dịch song ngữ',
+  listenTranslating: 'Đang dịch…',
+  listenModeEn: 'EN',
+  listenModeEnVi: 'EN → VI',
+  listenGap: 'Nghỉ',
+  listenNoPacks: 'Chưa có pack nào — tạo ở "Practice theo chủ đề" trước nhé.',
+  listenDeckStart: '▶ Nghe {n} thẻ đến hạn (từ → nghĩa)',
+  listenNoDue: 'Không có thẻ đến hạn để nghe.',
+  listenBack: '← Danh sách',
+
   // Sync (Supabase)
   syncTitle: 'Đồng bộ giữa các thiết bị',
   syncHint: 'Đăng nhập để sổ từ và tiến độ tự đồng bộ giữa máy tính và điện thoại. Không bắt buộc — chưa đăng nhập thì mọi thứ vẫn nằm trên máy này.',

@@ -6,6 +6,7 @@ import DeckScreen from './screens/Deck/DeckScreen';
 import HomeScreen from './screens/Home/HomeScreen';
 import StudyHub from './screens/Study/StudyHub';
 import PracticeHub from './screens/Practice/PracticeHub';
+import ListenScreen from './screens/Listen/ListenScreen';
 import PracticeTopicScreen from './screens/Practice/PracticeTopicScreen';
 import ProgressScreen from './screens/Progress/ProgressScreen';
 import QuizScreen from './screens/Quiz/QuizScreen';
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="/quiz" element={<QuizScreen />} />
             <Route path="/progress" element={<ProgressScreen />} />
             <Route path="/practice/topic" element={<PracticeTopicScreen />} />
+            <Route path="/listen" element={<ListenScreen />} />
             <Route path="/vocabtest" element={<VocabTestScreen />} />
             <Route path="/share" element={<ShareScreen />} />
             <Route path="*" element={<ComingSoon titleKey="notFoundTitle" />} />

@@ -7,8 +7,9 @@
 import { openDB, type IDBPDatabase, type DBSchema } from 'idb';
 import type { Mistake, PracticePack, VocabCard } from '../core/types';
 import type { DictEntry } from './dict';
+import type { VoaArticle } from './voa';
 
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 
 interface AecDB extends DBSchema {
   cards: {
@@ -42,6 +43,10 @@ interface AecDB extends DBSchema {
     key: string;
     value: { key: string; value: unknown };
   };
+  articles: {
+    key: string; // url bài VOA
+    value: VoaArticle;
+  };
 }
 
 let dbPromise: Promise<IDBPDatabase<AecDB>> | null = null;
@@ -50,6 +55,7 @@ export function getDb(): Promise<IDBPDatabase<AecDB>> {
   if (!dbPromise) {
     dbPromise = openDB<AecDB>('aec', DB_VERSION, {
       upgrade(db, oldVersion) {
+        // Migration chạy tuần tự từng bậc (§9) — mỗi version một khối, không sửa khối cũ.
         if (oldVersion < 1) {
           const cards = db.createObjectStore('cards', { keyPath: 'id' });
           cards.createIndex('due', 'due');
@@ -63,6 +69,9 @@ export function getDb(): Promise<IDBPDatabase<AecDB>> {
           const journal = db.createObjectStore('journal', { keyPath: 'id' });
           journal.createIndex('date', 'date');
           db.createObjectStore('meta', { keyPath: 'key' });
+        }
+        if (oldVersion < 2) {
+          db.createObjectStore('articles', { keyPath: 'url' }); // bài VOA cache (Phase 5)
         }
       },
     });
@@ -152,6 +161,24 @@ export async function listPacks(limit = 8): Promise<PackEntry[]> {
   const db = await getDb();
   const all = (await db.getAll('packs')) as PackEntry[];
   return all.sort((a, b) => b.createdAt - a.createdAt).slice(0, limit);
+}
+
+// ---- Bài VOA (cache offline) ----
+
+export async function getArticle(url: string): Promise<VoaArticle | undefined> {
+  const db = await getDb();
+  return db.get('articles', url);
+}
+
+export async function putArticle(article: VoaArticle): Promise<void> {
+  const db = await getDb();
+  await db.put('articles', article);
+}
+
+export async function listArticles(limit = 20): Promise<VoaArticle[]> {
+  const db = await getDb();
+  const all = await db.getAll('articles');
+  return all.sort((a, b) => b.fetchedAt - a.fetchedAt).slice(0, limit);
 }
 
 // ---- Dict cache ----

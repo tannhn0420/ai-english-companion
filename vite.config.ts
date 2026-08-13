@@ -37,6 +37,29 @@ export default defineConfig({
         // App shell + bundle data mở (DATA.md §3) — precache nền, offline tra được từ/câu.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}', 'data/**/*.json'],
         navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
+        runtimeCaching: [
+          {
+            // MP3 VOA: nghe rồi → offline nghe lại được (Range để seek)
+            urlPattern: /\/api\/voa\/audio/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'voa-audio',
+              expiration: { maxEntries: 20, purgeOnQuotaError: true },
+              rangeRequests: true,
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Feed/bài: ưu tiên mạng, offline rơi về cache
+            urlPattern: /\/api\/voa\/(feed|page)/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'voa-text',
+              expiration: { maxEntries: 60 },
+            },
+          },
+        ],
       },
     }),
   ],

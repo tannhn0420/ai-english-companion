@@ -201,6 +201,25 @@ export const en: Record<keyof typeof vi, string> = {
   settingsLevel: 'Practice difficulty',
   settingsVocabTest: '🧪 Vocab test',
 
+  // Listen (Phase 5)
+  listenTitle: 'Listen',
+  listenVoa: 'VOA',
+  listenPacks: 'Packs',
+  listenDeck: 'Wordbook',
+  listenLoading: 'Loading…',
+  listenFeedErr: 'Could not load the VOA list — check your connection, or play a saved story below.',
+  listenSaved: '💾 Saved (works offline)',
+  listenCredit: 'Source: VOA Learning English — public domain, read slowly for learners.',
+  listenTranslate: '🌐 Translate side-by-side',
+  listenTranslating: 'Translating…',
+  listenModeEn: 'EN',
+  listenModeEnVi: 'EN → VI',
+  listenGap: 'Gap',
+  listenNoPacks: 'No packs yet — generate one in "Practice by topic" first.',
+  listenDeckStart: '▶ Listen to {n} due cards (term → meaning)',
+  listenNoDue: 'Nothing due to listen to.',
+  listenBack: '← Back to list',
+
   // Sync (Supabase)
   syncTitle: 'Sync across devices',
   syncHint: 'Sign in to sync your wordbook and progress between computer and phone. Optional — without an account everything stays on this device.',
