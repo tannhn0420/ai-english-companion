@@ -5,7 +5,7 @@
 // ============================================
 
 import { openDB, type IDBPDatabase, type DBSchema } from 'idb';
-import type { Mistake, PracticePack, VocabCard } from '../core/types';
+import type { JournalEntry, Mistake, PracticePack, VocabCard } from '../core/types';
 import type { DictEntry } from './dict';
 import type { VoaArticle } from './voa';
 
@@ -36,7 +36,7 @@ interface AecDB extends DBSchema {
   };
   journal: {
     key: string;
-    value: { id: string; date: string } & Record<string, unknown>;
+    value: JournalEntry;
     indexes: { date: string };
   };
   meta: {
@@ -221,6 +221,19 @@ export async function deleteMistake(id: string): Promise<void> {
 export async function countMistakes(): Promise<number> {
   const db = await getDb();
   return db.count('mistakes');
+}
+
+// ---- Nhật ký (Phase 9) ----
+
+export async function putJournal(entry: JournalEntry): Promise<void> {
+  const db = await getDb();
+  await db.put('journal', entry);
+}
+
+export async function listJournal(limit = 30): Promise<JournalEntry[]> {
+  const db = await getDb();
+  const all = (await db.getAll('journal')) as JournalEntry[];
+  return all.sort((a, b) => b.createdAt - a.createdAt).slice(0, limit);
 }
 
 // ---- Meta (key-value, giữ tên key như extension để phase sync map 1-1) ----

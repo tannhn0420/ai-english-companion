@@ -5,7 +5,7 @@ const MODES: { to: string; icon: string; label: MsgKey; phase?: string }[] = [
   { to: '/review', icon: '📇', label: 'studyReview' },
   { to: '/quiz', icon: '🎯', label: 'studyQuizCloze' },
   { to: '/deck', icon: '🗂️', label: 'studyDeck' },
-  { to: '/study', icon: '📓', label: 'studyMistakes', phase: 'Phase 9' },
+  { to: '/mistakes', icon: '📓', label: 'studyMistakes' },
 ];
 
 export default function StudyHub() {

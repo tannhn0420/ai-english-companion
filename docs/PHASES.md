@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🎉 M2 xong (Phase 4–6: AI Practice + Listen/VOA + Dictation). Sổ tay lỗi (store D12) đã có dữ liệu từ dictation. Nợ lại từ Phase 8: Web Push + sync phía extension. Tiếp theo: M3 — Phase 7 (Speaking) hoặc M4 — Phase 9 (Viết + UI ôn lỗi).**
+**Trạng thái hiện tại: 🚧 Phase 9 xong (Viết + Sổ tay lỗi UI) — vòng lặp học khép kín (sai ở dictation/viết → ôn lại cloze). Còn lại: Phase 7 (Speaking, M3) + Phase 10 (Conversation missions) + nợ Phase 8 (Web Push, sync extension). Tiếp theo: Phase 7 — Speaking.**
 
 ## Tổng quan Milestones
 
@@ -183,11 +183,11 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ## Phase 9 — Viết & Sổ tay lỗi (~3 buổi) — mở đầu M4
 
-- [ ] Màn hình **Journal**: prompt gợi ý mỗi ngày (sinh từ topic deck + weak words), viết 3–5 câu; **draft autosave** vào IndexedDB (ARCHITECTURE §10).
-- [ ] AI proofread: port prompt + schema `ProofreadResult`/`WritingIssue` từ extension (đã có sẵn, tinh chỉnh rồi); highlight lỗi + giải thích VI (tier `good`, 1 call/bài).
-- [ ] `core/mistakes.ts` theo contracts §3.5 + màn hình **Mistakes**: sổ tay lỗi mọi nguồn (dictation P6, speaking P7, writing), lọc theo loại/nguồn.
-- [ ] **Ôn lỗi**: mỗi lỗi → cloze ngay chỗ sai (`toClozeCard`), lịch SRS-lite riêng — không trộn vào lịch FSRS của deck.
-- [ ] Gamification tính journal là hoạt động ngày (streak/quest).
+- [x] Màn hình **Journal** (`/journal`): prompt gợi ý mỗi ngày (14 đề xoay vòng), viết 3–5 câu; **draft autosave** localStorage (ARCHITECTURE §10 — thoát vào lại vẫn còn); lịch sử bài viết.
+- [x] AI proofread (`services/ai/writing.ts`): port prompt + schema `ProofreadResult`/`WritingIssue` từ extension; hiện bản sửa + CEFR + từng lỗi kèm giải thích VI (tier `good`, 1 call/bài).
+- [x] `core/mistakes.ts` `fromProofread` + màn hình **Mistakes** (`/mistakes`): sổ tay lỗi mọi nguồn (dictation ✍️/writing/quiz), xóa từng lỗi.
+- [x] **Ôn lỗi**: mỗi lỗi → cloze ngay chỗ sai (`toClozeCard`), SRS-lite riêng (`reviewMistake`: đúng giãn 1/3/7 ngày) — không trộn lịch FSRS.
+- [x] Gamification: journal + ôn lỗi tính là hoạt động ngày (XP/streak).
 
 **Acceptance criteria:**
 - Viết bài 5 câu → nhận sửa + giải thích VI trong < 10s; reload giữa chừng không mất draft.

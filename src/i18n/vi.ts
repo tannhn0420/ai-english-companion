@@ -265,6 +265,25 @@ export const vi = {
   syncError: 'Đồng bộ lỗi: {msg}',
   syncConfirmEmail: 'Kiểm tra hộp thư, bấm link xác nhận, rồi quay lại đăng nhập.',
 
+  // Mistakes review (Phase 9)
+  mistEmptyTitle: 'Sổ tay lỗi đang trống.',
+  mistEmptyHint: 'Lỗi từ nghe chép chính tả và viết nhật ký sẽ tự vào đây để ôn lại.',
+  mistReviewDue: '▶ Ôn {n} lỗi đến hạn',
+  mistNothingDue: 'Chưa có lỗi nào đến hạn — quay lại sau nhé.',
+
+  // Journal (Phase 9)
+  journalToday: 'Đề hôm nay',
+  journalPlaceholder: 'Viết 3–5 câu tiếng Anh… (sai cũng không sao, AI sẽ sửa)',
+  journalDraftSaved: '✓ Tự lưu nháp — thoát ra vào lại vẫn còn.',
+  journalSubmit: '✨ Nhờ AI sửa',
+  journalChecking: 'Đang đọc & sửa…',
+  journalCorrected: 'Bản đã sửa',
+  journalPerfect: 'Không có lỗi nào — tuyệt vời! 🎉',
+  journalIssues: '{n} điểm cần sửa',
+  journalSavedMistakes: 'Đã lưu {n} lỗi vào sổ tay để ôn lại.',
+  journalNew: 'Viết bài mới',
+  journalHistory: 'Bài đã viết',
+
   // Player
   errPlayback: 'Không phát được audio — thử bài khác hoặc kiểm tra mạng.',
   retry: 'Thử lại',

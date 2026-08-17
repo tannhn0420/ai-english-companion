@@ -6,7 +6,7 @@
 
 import type { WordDiff } from './dictation';
 import type { ClozeQ } from './cloze';
-import type { Mistake } from './types';
+import type { Mistake, WritingIssue, WritingIssueType } from './types';
 
 function mkId(now: number, salt: string): string {
   return typeof crypto !== 'undefined' && crypto.randomUUID
@@ -31,6 +31,40 @@ export function fromDictation(diff: WordDiff[], sentence: string, now: number): 
       corrected: sentence,
       errorSpan: word,
       type: 'listening',
+      createdAt: now,
+      due: now,
+      reps: 0,
+    });
+  }
+  return out;
+}
+
+const WRITING_TYPE_MAP: Record<WritingIssueType, Mistake['type']> = {
+  grammar: 'grammar',
+  spelling: 'spelling',
+  'word-choice': 'word-choice',
+  style: 'word-choice',
+  punctuation: 'grammar',
+};
+
+/**
+ * Từ proofread bài viết: mỗi WritingIssue → một Mistake. `corrected` là câu
+ * đúng (dùng suggestion làm span để ôn cloze), `original` giữ đoạn sai.
+ */
+export function fromProofread(issues: WritingIssue[], now: number): Mistake[] {
+  const out: Mistake[] = [];
+  for (const it of issues) {
+    const suggestion = (it.suggestion || '').trim();
+    const original = (it.original || '').trim();
+    if (!suggestion || !original || suggestion.toLowerCase() === original.toLowerCase()) continue;
+    out.push({
+      id: mkId(now, suggestion),
+      source: 'writing',
+      original,
+      corrected: suggestion,
+      errorSpan: suggestion,
+      type: WRITING_TYPE_MAP[it.type] ?? 'grammar',
+      note: it.why,
       createdAt: now,
       due: now,
       reps: 0,

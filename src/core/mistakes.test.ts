@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { gradeSentence } from './dictation';
-import { fromDictation, toClozeCard } from './mistakes';
+import { fromDictation, fromProofread, toClozeCard } from './mistakes';
 
 const NOW = 1_750_000_000_000;
 
@@ -22,6 +22,26 @@ describe('fromDictation', () => {
     const diff = gradeSentence('I go to work', 'I go on work');
     // "to" -> wrong nhung 2 ky tu -> khong tao mistake
     expect(fromDictation(diff, 'I go to work', NOW)).toHaveLength(0);
+  });
+});
+
+describe('fromProofread', () => {
+  it('moi issue -> Mistake source writing, giu note tieng Viet', () => {
+    const ms = fromProofread(
+      [
+        { original: 'I have 25 years old', suggestion: 'I am 25 years old', why: 'Tuoi dung to be', type: 'grammar' },
+        { original: 'recieve', suggestion: 'receive', why: 'i truoc e', type: 'spelling' },
+      ],
+      NOW,
+    );
+    expect(ms).toHaveLength(2);
+    expect(ms[0]).toMatchObject({ source: 'writing', corrected: 'I am 25 years old', type: 'grammar', note: 'Tuoi dung to be' });
+    expect(ms[1].type).toBe('spelling');
+  });
+
+  it('bo qua issue khong doi (suggestion == original)', () => {
+    const ms = fromProofread([{ original: 'ok', suggestion: 'ok', why: '', type: 'style' }], NOW);
+    expect(ms).toHaveLength(0);
   });
 });
 

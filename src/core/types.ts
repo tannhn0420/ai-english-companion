@@ -95,3 +95,33 @@ export interface PracticePack {
   dialogue: DialogueLine[];
   passage: PracticePhrase[]; // độc thoại ngắn, mỗi item một câu
 }
+
+// ============================================
+// Viết (Phase 9) — port từ extension writing assistant
+// ============================================
+
+export type WritingIssueType = 'grammar' | 'spelling' | 'word-choice' | 'style' | 'punctuation';
+
+export interface WritingIssue {
+  original: string; // đoạn sai copy nguyên từ bản gốc
+  suggestion: string; // bản sửa
+  why: string; // giải thích ngắn tiếng Việt
+  type: WritingIssueType;
+}
+
+export interface ProofreadResult {
+  corrected: string; // bản đã sửa đầy đủ
+  issues: WritingIssue[];
+  level?: string; // CEFR ước lượng của bản gốc (A1..C2)
+}
+
+/** Một bài nhật ký đã lưu (store `journal`). */
+export interface JournalEntry {
+  id: string;
+  date: string; // YYYY-MM-DD
+  prompt: string;
+  text: string; // bản người dùng viết
+  result?: ProofreadResult;
+  createdAt: number;
+  updatedAt?: number;
+}

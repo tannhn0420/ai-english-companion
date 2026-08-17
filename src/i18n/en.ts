@@ -264,6 +264,25 @@ export const en: Record<keyof typeof vi, string> = {
   syncError: 'Sync failed: {msg}',
   syncConfirmEmail: 'Check your inbox, confirm your email, then sign in again.',
 
+  // Mistakes review (Phase 9)
+  mistEmptyTitle: 'Your mistake notebook is empty.',
+  mistEmptyHint: 'Mistakes from dictation and journaling land here for review.',
+  mistReviewDue: '▶ Review {n} due mistakes',
+  mistNothingDue: 'Nothing due yet — come back later.',
+
+  // Journal (Phase 9)
+  journalToday: "Today's prompt",
+  journalPlaceholder: 'Write 3–5 English sentences… (mistakes are fine, AI will fix them)',
+  journalDraftSaved: '✓ Draft auto-saved — leave and come back, it stays.',
+  journalSubmit: '✨ Get AI feedback',
+  journalChecking: 'Reading & correcting…',
+  journalCorrected: 'Corrected',
+  journalPerfect: 'No mistakes — excellent! 🎉',
+  journalIssues: '{n} things to fix',
+  journalSavedMistakes: 'Saved {n} mistakes for review.',
+  journalNew: 'Write a new entry',
+  journalHistory: 'Past entries',
+
   // Player
   errPlayback: "Couldn't play the audio — try another story or check your connection.",
   retry: 'Retry',
