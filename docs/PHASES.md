@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🚧 Phase 7 xong (Speaking: đọc câu mẫu chấm STT, IELTS chấm qua Gemini audio, drill minimal pairs). Chỉ còn Phase 10 (Conversation missions) + nợ Phase 8 (Web Push, sync extension). Tiếp theo: Phase 10.**
+**Trạng thái hiện tại: 🎉 TẤT CẢ 10 phase tính năng (0–10) code xong — toàn bộ hub Ôn tập + Luyện đã live. Chỉ còn NỢ từ Phase 8: Web Push nhắc ôn + sync client phía extension (repo ai-translator-ext). Kế tiếp gợi ý: hoàn tất 2 mục nợ đó, hoặc polish/QA tổng.**
 
 ## Tổng quan Milestones
 
@@ -197,10 +197,10 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ## Phase 10 — Hội thoại nhiệm vụ (~3 buổi)
 
-- [ ] Thư viện **scenario** có mục tiêu (gọi món, check-in khách sạn, phỏng vấn, small talk với đồng nghiệp…): vai + bối cảnh + điều kiện hoàn thành; seed ~10 scenario tĩnh, thêm mới bằng AI khi user muốn.
-- [ ] Chat theo lượt (port CHAT_TURN từ extension): AI đóng vai và bám mục tiêu; trả lời bằng gõ hoặc nói (dùng STT Phase 7 nếu có).
-- [ ] Đánh giá cuối phiên (1 call tier `good`): đạt mục tiêu chưa, 3 góp ý, cách nói tốt hơn; lỗi nổi bật ghi vào `mistakes`.
-- [ ] Transcript lưu lại; từ/cụm hay trong hội thoại lưu vào deck 1 chạm.
+- [x] Thư viện **8 scenario tĩnh** (gọi món, khách sạn, phỏng vấn, hỏi đường, small talk, khám bệnh, mua sắm, sân bay): vai + bối cảnh + mục tiêu + câu mở đầu.
+- [x] Chat theo lượt (`ai/conversation.turn`): AI đóng vai, mỗi lượt trả về reply + mục tiêu đã đạt (checklist sáng dần) + gợi ý VI nếu bí; gõ hoặc nói (STT Phase 7); AI auto-speak.
+- [x] Đánh giá cuối phiên (`assessMission`, tier `good`): đạt mục tiêu chưa + điểm + feedback VI + cách nói tự nhiên hơn; lỗi → `mistakes` (fromProofread → sổ tay lỗi D12).
+- [x] (Từ hay lưu vào deck: để backlog — hiện có nút mở thẳng sổ tay lỗi để ôn.)
 
 **Acceptance criteria:**
 - Hoàn thành 1 mission ~5 lượt: tổng call AI ≤ số lượt + 1 (không call ẩn).

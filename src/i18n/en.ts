@@ -312,6 +312,17 @@ export const en: Record<keyof typeof vi, string> = {
   spkBetter: 'Model answer (Band 8+)',
   spkDrillHint: 'Pick a tricky sound to drill — AI gives a tip, minimal pairs and sample sentences.',
 
+  // Conversation missions (Phase 10)
+  missHint: 'Pick a situation — the AI plays a role, you chat to complete the goals.',
+  missTypePh: 'Type your English reply…',
+  missSend: 'Send',
+  missEnd: 'End',
+  missDone: 'Mission complete! 🎉',
+  missPartial: 'Session ended',
+  missBetter: 'More natural ways to say it',
+  missSavedMistakes: 'Saved {n} mistakes to your notebook.',
+  missAnother: 'Another situation',
+
   // Player
   errPlayback: "Couldn't play the audio — try another story or check your connection.",
   retry: 'Retry',

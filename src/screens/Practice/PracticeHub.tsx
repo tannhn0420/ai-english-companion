@@ -8,7 +8,7 @@ const MODES: { icon: string; label: MsgKey; phase?: string; to?: string }[] = [
   { icon: '✍️', label: 'practiceDictation', to: '/dictation' },
   { icon: '🗣️', label: 'practiceSpeaking', to: '/speaking' },
   { icon: '📔', label: 'practiceJournal', to: '/journal' },
-  { icon: '🎭', label: 'practiceMissions', phase: 'Phase 10' },
+  { icon: '🎭', label: 'practiceMissions', to: '/missions' },
 ];
 
 export default function PracticeHub() {

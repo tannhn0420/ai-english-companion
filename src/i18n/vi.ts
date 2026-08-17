@@ -313,6 +313,17 @@ export const vi = {
   spkBetter: 'Câu trả lời mẫu (Band 8+)',
   spkDrillHint: 'Chọn âm hay sai để luyện — AI cho mẹo, cặp từ tối thiểu và câu mẫu.',
 
+  // Conversation missions (Phase 10)
+  missHint: 'Chọn tình huống — AI đóng vai, bạn trò chuyện để hoàn thành mục tiêu.',
+  missTypePh: 'Nhập câu trả lời tiếng Anh…',
+  missSend: 'Gửi',
+  missEnd: 'Kết thúc',
+  missDone: 'Hoàn thành nhiệm vụ! 🎉',
+  missPartial: 'Kết thúc phiên',
+  missBetter: 'Cách nói tự nhiên hơn',
+  missSavedMistakes: 'Đã lưu {n} lỗi vào sổ tay lỗi.',
+  missAnother: 'Tình huống khác',
+
   // Player
   errPlayback: 'Không phát được audio — thử bài khác hoặc kiểm tra mạng.',
   retry: 'Thử lại',

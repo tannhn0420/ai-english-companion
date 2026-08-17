@@ -116,6 +116,34 @@ export interface ProofreadResult {
 }
 
 // ============================================
+// Hội thoại nhiệm vụ (Phase 10)
+// ============================================
+
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  text: string;
+}
+
+export interface Scenario {
+  id: string;
+  emoji: string;
+  title: string; // VI
+  role: string; // vai AI đóng (EN, dùng trong prompt)
+  you: string; // vai của bạn (VI)
+  context: string; // bối cảnh (VI)
+  goals: string[]; // mục tiêu cần hoàn thành (VI)
+  opener: string; // câu mở đầu AI nói (EN)
+}
+
+export interface MissionResult {
+  completed: boolean;
+  score: number; // 0-100
+  feedback: string; // VI
+  better: string[]; // vài câu nói tốt hơn (EN)
+  issues: WritingIssue[]; // lỗi để đổ vào sổ tay
+}
+
+// ============================================
 // Nói (Phase 7) — port từ extension
 // ============================================
 
