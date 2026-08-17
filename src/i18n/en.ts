@@ -323,6 +323,18 @@ export const en: Record<keyof typeof vi, string> = {
   missSavedMistakes: 'Saved {n} mistakes to your notebook.',
   missAnother: 'Another situation',
 
+  // Reminders (Web Push, Phase 8)
+  remindTitle: 'Daily review reminder',
+  remindHour: 'Reminder time',
+  remindOn: '🔔 Turn on reminders',
+  remindOff: '🔕 Turn off reminders',
+  remindHint: 'Get a notification when words pile up — install the app to your home screen first.',
+  remindEnabled: 'Reminders on ✓',
+  remindDenied: 'Notification permission was blocked — re-enable it in browser settings.',
+  remindUnsupported: 'This device/browser does not support push notifications.',
+  remindNoVapid: 'Reminders are not configured yet (missing VAPID key) — see docs/PHASES.md.',
+  remindSignIn: 'Sign in (Sync section) to enable reminders.',
+
   // Player
   errPlayback: "Couldn't play the audio — try another story or check your connection.",
   retry: 'Retry',

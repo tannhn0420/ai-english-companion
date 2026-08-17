@@ -36,6 +36,8 @@ export default defineConfig({
       workbox: {
         // App shell + bundle data mở (DATA.md §3) — precache nền, offline tra được từ/câu.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}', 'data/**/*.json'],
+        // Chèn push/notificationclick handler vào SW mà không tự viết lại SW (Phase 8).
+        importScripts: ['push-sw.js'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [

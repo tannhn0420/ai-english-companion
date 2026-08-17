@@ -6,6 +6,7 @@ import { PROVIDER_DEFAULT_MODEL, validateKey } from '../../services/ai/client';
 import { getManifest, type BundleManifest } from '../../services/dataBundle';
 import { download } from '../../services/download';
 import { getSettings, saveSettings, type AppSettings } from '../../services/settings';
+import { disablePush, enablePush, isPushEnabled, pushConfigured, pushSupported, type EnableResult } from '../../services/push';
 import { getSession, signIn, signOut, signUp } from '../../services/supabase';
 import { lastSyncedAt, syncNow } from '../../services/sync';
 import { sortedVoices, speak } from '../../services/tts';
@@ -37,10 +38,38 @@ export default function SettingsScreen() {
   const [syncMsg, setSyncMsg] = useState('');
   const [syncBusy, setSyncBusy] = useState(false);
 
+  const [pushOn, setPushOn] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
+
   useEffect(() => {
     void getManifest().then(setManifest);
     void getSession().then(setSession);
+    void isPushEnabled().then(setPushOn);
   }, []);
+
+  async function togglePush() {
+    setPushBusy(true);
+    try {
+      if (pushOn) {
+        await disablePush();
+        setPushOn(false);
+      } else {
+        const r = await enablePush(settings.reminderHour);
+        setPushOn(r === 'ok');
+        const map: Record<EnableResult, string> = {
+          ok: t('remindEnabled'),
+          unsupported: t('remindUnsupported'),
+          'no-vapid': t('remindNoVapid'),
+          'signed-out': t('remindSignIn'),
+          denied: t('remindDenied'),
+          error: t('syncError', { msg: '?' }),
+        };
+        showToast(map[r]);
+      }
+    } finally {
+      setPushBusy(false);
+    }
+  }
 
   async function runSync() {
     setSyncBusy(true);
@@ -328,6 +357,41 @@ export default function SettingsScreen() {
           </p>
         )}
       </div>
+
+      {pushSupported() && (
+        <div className="card" style={{ marginBottom: 12 }}>
+          <h3>{t('remindTitle')}</h3>
+          {!session ? (
+            <p className="text-2" style={{ margin: 0 }}>{t('remindSignIn')}</p>
+          ) : !pushConfigured() ? (
+            <p className="text-2" style={{ margin: 0 }}>{t('remindNoVapid')}</p>
+          ) : (
+            <>
+              <div className="hub-item">
+                <span className="hub-item__label">{t('remindHour')}</span>
+                <select
+                  className="input"
+                  style={{ width: 'auto' }}
+                  value={settings.reminderHour}
+                  onChange={(e) => patch({ reminderHour: Number(e.target.value) })}
+                >
+                  {Array.from({ length: 24 }, (_, h) => (
+                    <option key={h} value={h}>
+                      {String(h).padStart(2, '0')}:00
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button className="btn" onClick={() => void togglePush()} disabled={pushBusy}>
+                {pushBusy ? '…' : pushOn ? t('remindOff') : t('remindOn')}
+              </button>
+              <p className="text-2" style={{ fontSize: 12, marginBottom: 0 }}>
+                {t('remindHint')}
+              </p>
+            </>
+          )}
+        </div>
+      )}
 
       <div className="card" style={{ marginBottom: 12 }}>
         <h3>{t('settingsAiTitle')}</h3>

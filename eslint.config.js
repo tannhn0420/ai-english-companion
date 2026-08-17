@@ -4,7 +4,8 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
-  { ignores: ['dist', 'dev-dist'] },
+  // supabase/functions chạy trên Deno (globals + npm: imports riêng) — không lint bằng config app
+  { ignores: ['dist', 'dev-dist', 'supabase/functions/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -28,10 +29,10 @@ export default tseslint.config(
     },
   },
   {
-    // Cloudflare Worker (fetch/Response/Headers/URL như service worker runtime)
-    files: ['worker/**/*.js'],
+    // Cloudflare Worker + push service-worker (fetch/Response/self/clients…)
+    files: ['worker/**/*.js', 'public/push-sw.js'],
     languageOptions: {
-      globals: globals.serviceworker,
+      globals: { ...globals.serviceworker, ...globals.browser },
     },
   },
 );

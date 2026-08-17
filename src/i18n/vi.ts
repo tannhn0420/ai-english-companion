@@ -324,6 +324,18 @@ export const vi = {
   missSavedMistakes: 'Đã lưu {n} lỗi vào sổ tay lỗi.',
   missAnother: 'Tình huống khác',
 
+  // Reminders (Web Push, Phase 8)
+  remindTitle: 'Nhắc ôn hằng ngày',
+  remindHour: 'Giờ nhắc',
+  remindOn: '🔔 Bật nhắc ôn',
+  remindOff: '🔕 Tắt nhắc ôn',
+  remindHint: 'Nhận thông báo khi có nhiều từ đến hạn — cần đã cài app lên màn hình chính.',
+  remindEnabled: 'Đã bật nhắc ôn ✓',
+  remindDenied: 'Bạn đã từ chối quyền thông báo — bật lại trong cài đặt trình duyệt.',
+  remindUnsupported: 'Thiết bị/trình duyệt này không hỗ trợ thông báo đẩy.',
+  remindNoVapid: 'Nhắc ôn chưa được cấu hình (thiếu VAPID key) — xem docs/PHASES.md.',
+  remindSignIn: 'Đăng nhập (mục Đồng bộ) để bật nhắc ôn.',
+
   // Player
   errPlayback: 'Không phát được audio — thử bài khác hoặc kiểm tra mạng.',
   retry: 'Thử lại',

@@ -16,6 +16,7 @@ export interface AppSettings {
   aiModelGood: string; // '' = dùng aiModel (tier good)
   aiBaseUrl: string; // chỉ dùng cho provider 'openai' (endpoint tự host)
   practiceLevel: string; // beginner | intermediate | advanced (vocab test set mặc định)
+  reminderHour: number; // giờ (0–23) muốn nhận nhắc ôn (Web Push, Phase 8)
 }
 
 const KEY = 'aec-settings';
@@ -32,6 +33,7 @@ const DEFAULTS: AppSettings = {
   aiModelGood: '',
   aiBaseUrl: '',
   practiceLevel: 'intermediate',
+  reminderHour: 20,
 };
 
 export function getSettings(): AppSettings {

@@ -171,8 +171,9 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 - [x] Client sync: pull-then-push, LWW theo `updatedAt`; supabase-js lazy-load (chunk riêng, bundle chính vẫn < budget); chạy khi mở app + debounce 3s sau mỗi phiên học/sửa deck + nút "Đồng bộ ngay".
 - [x] Merge dữ liệu học: `practiceDays`/`weakWords` merge **max-wise** từng entry (idempotent, không double-count), `practiceStats` dẫn xuất lại từ days, freeze lấy ngày gần nhất — `core/syncMerge.ts`, 6 unit tests.
 - [x] Migration: import stamp `updatedAt = now`; thẻ xóa cục bộ ghi tombstone (meta) và lan truyền qua sync.
-- [ ] Web Push: xin quyền, lưu subscription; Edge Function cron gửi "N từ đến hạn" theo `reminderHour`. ⬅ làm sau khi sync chạy ổn
-- [ ] (Extension) thêm sync client tương tự → hai bên tự đồng bộ, bỏ import/export thủ công. ⬅ làm ở repo extension
+- [x] Web Push: `public/push-sw.js` (importScripts vào SW, không viết lại SW) + `services/push.ts` (subscribe/unsubscribe, VAPID public từ `VITE_VAPID_PUBLIC_KEY`) + Settings "Nhắc ôn" (giờ + bật/tắt); `supabase/push-schema.sql` (push_subscriptions) + `supabase/functions/send-reminders` (Edge cron: đếm thẻ due từ bảng cards → gửi push đúng giờ địa phương) + `scripts/gen-vapid.mjs`.
+  - **Runbook** (chủ dự án chạy 1 lần): `npm i -D web-push && node scripts/gen-vapid.mjs` → đặt `VITE_VAPID_PUBLIC_KEY` vào build env Cloudflare; chạy `supabase/push-schema.sql`; `supabase functions deploy send-reminders --no-verify-jwt` + set secrets `VAPID_PUBLIC/VAPID_PRIVATE/VAPID_SUBJECT`; tạo cron gọi function mỗi giờ (Supabase Schedules hoặc pg_cron + pg_net).
+- [ ] (Extension) thêm sync client tương tự → hai bên tự đồng bộ, bỏ import/export thủ công. ⬅ đang làm (repo ai-translator-ext)
 
 **Acceptance criteria:**
 - Sửa thẻ trên web app → thấy trên extension (và ngược lại) sau lần sync kế tiếp.
