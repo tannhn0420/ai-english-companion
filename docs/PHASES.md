@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🎉 TẤT CẢ 10 phase tính năng (0–10) code xong — toàn bộ hub Ôn tập + Luyện đã live. Chỉ còn NỢ từ Phase 8: Web Push nhắc ôn + sync client phía extension (repo ai-translator-ext). Kế tiếp gợi ý: hoàn tất 2 mục nợ đó, hoặc polish/QA tổng.**
+**Trạng thái hiện tại: 🎉 HOÀN TẤT toàn bộ roadmap (Phase 0–10 + cả 2 mục nợ Phase 8: Web Push và sync phía extension). App + extension tự đồng bộ chung Supabase. Còn lại là việc DEPLOY do chủ dự án (chạy SQL push-schema, deploy Edge Function send-reminders + set VAPID secrets + cron) và polish/QA theo trải nghiệm thật.**
 
 ## Tổng quan Milestones
 
@@ -173,7 +173,7 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 - [x] Migration: import stamp `updatedAt = now`; thẻ xóa cục bộ ghi tombstone (meta) và lan truyền qua sync.
 - [x] Web Push: `public/push-sw.js` (importScripts vào SW, không viết lại SW) + `services/push.ts` (subscribe/unsubscribe, VAPID public từ `VITE_VAPID_PUBLIC_KEY`) + Settings "Nhắc ôn" (giờ + bật/tắt); `supabase/push-schema.sql` (push_subscriptions) + `supabase/functions/send-reminders` (Edge cron: đếm thẻ due từ bảng cards → gửi push đúng giờ địa phương) + `scripts/gen-vapid.mjs`.
   - **Runbook** (chủ dự án chạy 1 lần): `npm i -D web-push && node scripts/gen-vapid.mjs` → đặt `VITE_VAPID_PUBLIC_KEY` vào build env Cloudflare; chạy `supabase/push-schema.sql`; `supabase functions deploy send-reminders --no-verify-jwt` + set secrets `VAPID_PUBLIC/VAPID_PRIVATE/VAPID_SUBJECT`; tạo cron gọi function mỗi giờ (Supabase Schedules hoặc pg_cron + pg_net).
-- [ ] (Extension) thêm sync client tương tự → hai bên tự đồng bộ, bỏ import/export thủ công. ⬅ đang làm (repo ai-translator-ext)
+- [x] (Extension) sync client tương tự trong `ai-translator-ext` (`src/services/sync.ts` + tab "☁️ Đồng bộ" trong Options): cùng Supabase project, vocabDeck ↔ cards (LWW, tombstone qua snapshot synced-id), practiceDays/weakWords merge max-wise. → hai bên tự đồng bộ, không cần import/export thủ công.
 
 **Acceptance criteria:**
 - Sửa thẻ trên web app → thấy trên extension (và ngược lại) sau lần sync kế tiếp.
