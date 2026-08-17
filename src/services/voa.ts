@@ -32,6 +32,16 @@ export function proxied(kind: 'page' | 'audio', url: string): string {
 }
 
 /**
+ * Phân biệt file TIẾNG thật với ảnh thumbnail. RSS `<enclosure>` của các feed
+ * chương trình VOA trỏ tới ẢNH trên gdb.voanews.com — không phải audio. MP3
+ * thật nằm trên voa-audio.voanews.eu và có đuôi .mp3.
+ */
+export function isAudioUrl(u: string | undefined): u is string {
+  if (!u) return false;
+  return /\.mp3(\?|#|$)/i.test(u) || /voa-audio\./i.test(u);
+}
+
+/**
  * Các chương trình VOA Learning English. LƯU Ý: VOA ngừng sản xuất nội dung
  * mới từ 3/2025 (bị cắt ngân sách) — đây là KHO LƯU TRỮ, vẫn là tài liệu học
  * chất lượng (text + audio đọc chậm, public domain).
@@ -55,9 +65,14 @@ export async function fetchFeed(feedUrl?: string): Promise<VoaFeedItem[]> {
   xml.querySelectorAll('item').forEach((it) => {
     const title = it.querySelector('title')?.textContent?.trim() || '';
     const link = it.querySelector('link')?.textContent?.trim() || '';
-    const audio = it.querySelector('enclosure')?.getAttribute('url') || undefined;
+    // Chỉ nhận enclosure là audio khi type=audio/* HOẶC url là .mp3 —
+    // enclosure của feed chương trình là ẢNH thumbnail (gdb.voanews.com).
+    const enc = it.querySelector('enclosure');
+    const encUrl = enc?.getAttribute('url') || undefined;
+    const encType = enc?.getAttribute('type') || '';
+    const audio = encType.startsWith('audio') || isAudioUrl(encUrl) ? encUrl : undefined;
     const pubDate = it.querySelector('pubDate')?.textContent?.trim() || undefined;
-    if (title && (link || audio)) items.push({ title, link: link || audio!, pubDate, audio });
+    if (title && link) items.push({ title, link, pubDate, audio });
   });
   return items;
 }
@@ -65,7 +80,8 @@ export async function fetchFeed(feedUrl?: string): Promise<VoaFeedItem[]> {
 /** Lấy bài: cache trước, không có thì fetch qua proxy + parse + cache. */
 export async function loadArticle(item: VoaFeedItem): Promise<VoaArticle> {
   const cached = await getArticle(item.link);
-  if (cached) return cached;
+  // Bỏ qua cache cũ bị dính audio sai (URL ảnh từ bản lỗi trước) → parse lại.
+  if (cached && (!cached.audio || isAudioUrl(cached.audio))) return cached;
 
   const res = await fetch(proxied('page', item.link));
   if (!res.ok) throw new Error(`VOA page: HTTP ${res.status}`);
@@ -87,14 +103,15 @@ export async function loadArticle(item: VoaFeedItem): Promise<VoaArticle> {
     if (t) paras.push(t);
   });
 
-  // VOA đặt src TRỰC TIẾP trên thẻ <audio> (không có <source> con);
-  // link download có đuôi ?download=1 — bỏ đi để cache/Range hoạt động sạch.
-  const rawAudio =
-    doc.querySelector('audio[src]')?.getAttribute('src') ||
-    doc.querySelector('audio source')?.getAttribute('src') ||
-    doc.querySelector('a[href*=".mp3"]')?.getAttribute('href') ||
-    item.audio ||
-    undefined;
+  // MP3 thật: ưu tiên thẻ <audio src>, rồi <source>, rồi link .mp3 trong trang.
+  // Lọc qua isAudioUrl để KHÔNG lấy nhầm ảnh; ?download=1 bỏ đi cho Range sạch.
+  const candidates = [
+    doc.querySelector('audio[src]')?.getAttribute('src'),
+    doc.querySelector('audio source[src]')?.getAttribute('src'),
+    doc.querySelector('a[href*=".mp3"]')?.getAttribute('href'),
+    item.audio,
+  ];
+  const rawAudio = candidates.find((c) => isAudioUrl(c || undefined));
   const audio = rawAudio ? rawAudio.replace(/\?download=1.*$/, '') : undefined;
 
   const article: VoaArticle = {
@@ -148,7 +165,8 @@ export function trackFor(item: VoaFeedItem): import('./audioPlayer').Track {
   return {
     title: item.title,
     link: item.link,
-    url: item.audio ? proxied('audio', item.audio) : undefined,
+    // Chỉ dùng thẳng khi chắc chắn là MP3; còn lại resolve từ trang bài.
+    url: isAudioUrl(item.audio) ? proxied('audio', item.audio) : undefined,
     resolve: async () => {
       const art = await loadArticle(item);
       return art.audio ? proxied('audio', art.audio) : undefined;

@@ -18,7 +18,7 @@ function isAllowed(target) {
   return /(^|\.)voanews\.(com|eu)$/.test(target.hostname) && target.protocol === 'https:';
 }
 
-async function proxy(targetUrl, request) {
+async function proxy(targetUrl, request, expect) {
   let target;
   try {
     target = new URL(targetUrl);
@@ -42,6 +42,18 @@ async function proxy(targetUrl, request) {
     cf: { cacheTtl: 1800, cacheEverything: true },
   });
 
+  // Phòng vệ: yêu cầu audio nhưng upstream trả ảnh/HTML → báo lỗi rõ,
+  // KHÔNG đẩy bytes ảnh vào thẻ <audio> (bug JPEG-as-audio).
+  if (expect === 'audio') {
+    const ct = res.headers.get('content-type') || '';
+    if (ct && !/audio|octet-stream|mpeg/i.test(ct)) {
+      return new Response(`Not audio (got ${ct})`, {
+        status: 415,
+        headers: { 'Access-Control-Allow-Origin': '*' },
+      });
+    }
+  }
+
   const out = new Headers();
   for (const h of ['content-type', 'content-length', 'content-range', 'accept-ranges']) {
     const v = res.headers.get(h);
@@ -63,7 +75,7 @@ export default {
     if (url.pathname === '/api/voa/page' || url.pathname === '/api/voa/audio') {
       const target = url.searchParams.get('url');
       if (!target) return new Response('Missing url', { status: 400 });
-      return proxy(target, request);
+      return proxy(target, request, url.pathname.endsWith('/audio') ? 'audio' : 'page');
     }
     return new Response('Not found', { status: 404 });
   },
