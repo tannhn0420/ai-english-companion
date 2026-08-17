@@ -3,17 +3,19 @@
 // hàng đợi phát liên tục kiểu máy nghe nhạc: auto-next, MediaSession
 // (điều khiển lock screen), sống sót khi chuyển màn hình.
 // Track thiếu URL trực tiếp sẽ resolve lười khi đến lượt (fetch trang bài).
+//
+// Chống cascade (bug "Nghe tất cả" nhảy hết bài): mỗi lần load tăng `gen`,
+// event của lần load cũ bị bỏ qua; chỉ auto-next khi audio LỖI THẬT
+// (el.error != null), không phải khi đang đổi src; sau 3 bài lỗi liên tiếp
+// thì dừng và báo lỗi thay vì nhảy câm.
 // ============================================
 
 import { useSyncExternalStore } from 'react';
 
 export interface Track {
   title: string;
-  /** URL audio (đã proxy) nếu biết sẵn */
   url?: string;
-  /** Resolve lười khi đến lượt phát (vd: phải mở trang bài mới có MP3) */
   resolve?: () => Promise<string | undefined>;
-  /** Định danh bài (url bài viết) — màn hình dùng để biết track nào đang phát */
   link?: string;
 }
 
@@ -24,9 +26,18 @@ export interface PlayerState {
   loading: boolean;
   time: number;
   duration: number;
+  error: string;
 }
 
-let state: PlayerState = { queue: [], index: 0, playing: false, loading: false, time: 0, duration: 0 };
+let state: PlayerState = {
+  queue: [],
+  index: 0,
+  playing: false,
+  loading: false,
+  time: 0,
+  duration: 0,
+  error: '',
+};
 const listeners = new Set<() => void>();
 
 function emit(patch: Partial<PlayerState>): void {
@@ -35,16 +46,26 @@ function emit(patch: Partial<PlayerState>): void {
 }
 
 const el: HTMLAudioElement | null = typeof Audio !== 'undefined' ? new Audio() : null;
+let gen = 0; // thế hệ load hiện tại — bỏ qua event của load cũ
+let failStreak = 0;
+
 if (el) {
-  el.preload = 'none';
-  el.addEventListener('timeupdate', () =>
-    emit({ time: el.currentTime, duration: el.duration || 0 }),
-  );
+  el.preload = 'auto';
+  el.addEventListener('timeupdate', () => emit({ time: el.currentTime, duration: el.duration || 0 }));
   el.addEventListener('durationchange', () => emit({ duration: el.duration || 0 }));
-  el.addEventListener('play', () => emit({ playing: true }));
+  el.addEventListener('playing', () => {
+    failStreak = 0;
+    emit({ playing: true, loading: false, error: '' });
+  });
   el.addEventListener('pause', () => emit({ playing: false }));
-  el.addEventListener('ended', () => next());
-  el.addEventListener('error', () => next()); // track hỏng → bỏ qua, phát tiếp
+  el.addEventListener('ended', () => {
+    failStreak = 0;
+    next();
+  });
+  // CHỈ coi là hỏng khi có el.error thật (404/format), không phải abort do đổi src.
+  el.addEventListener('error', () => {
+    if (el.error) onUnplayable(state.index);
+  });
 }
 
 function setMediaSession(track: Track): void {
@@ -67,13 +88,30 @@ function setMediaSession(track: Track): void {
   }
 }
 
+/** Bài không phát được → thử bài kế, nhưng dừng sau 3 lỗi liên tiếp. */
+function onUnplayable(index: number): void {
+  failStreak += 1;
+  if (failStreak >= 3) {
+    failStreak = 0;
+    emit({ playing: false, loading: false, error: 'errPlayback' });
+    return;
+  }
+  if (index + 1 < state.queue.length) void loadAndPlay(index + 1);
+  else {
+    failStreak = 0;
+    stop();
+  }
+}
+
 async function loadAndPlay(index: number): Promise<void> {
+  const my = ++gen;
   const track = state.queue[index];
   if (!el || !track) {
     stop();
     return;
   }
-  emit({ index, loading: true, time: 0, duration: 0 });
+  emit({ index, loading: true, error: '', time: 0, duration: 0 });
+
   let url = track.url;
   if (!url && track.resolve) {
     try {
@@ -83,25 +121,26 @@ async function loadAndPlay(index: number): Promise<void> {
       url = undefined;
     }
   }
+  if (my !== gen) return; // đã có thao tác mới hơn — bỏ lần load này
   if (!url) {
-    // Không có audio → nhảy bài kế (tránh loop vô hạn khi cả queue hỏng)
-    emit({ loading: false });
-    if (index + 1 < state.queue.length) void loadAndPlay(index + 1);
-    else stop();
+    onUnplayable(index);
     return;
   }
+
   el.src = url;
   setMediaSession(track);
   try {
     await el.play();
   } catch {
-    /* autoplay bị chặn — user bấm ▶ ở mini player */
+    // Autoplay bị chặn (không mất gesture) — không phải lỗi audio.
+    // Bỏ spinner để user bấm ▶ ở mini player (toggle chạy trong gesture).
+    if (my === gen) emit({ loading: false });
   }
-  emit({ loading: false });
 }
 
 export function playQueue(tracks: Track[], startIndex = 0): void {
-  emit({ queue: tracks });
+  failStreak = 0;
+  emit({ queue: tracks, error: '' });
   void loadAndPlay(startIndex);
 }
 
@@ -126,12 +165,21 @@ export function seek(time: number): void {
   if (el && Number.isFinite(time)) el.currentTime = Math.max(0, time);
 }
 
+export function retry(): void {
+  if (state.queue.length) {
+    failStreak = 0;
+    void loadAndPlay(state.index);
+  }
+}
+
 export function stop(): void {
+  gen++; // vô hiệu mọi load đang chờ
   if (el) {
     el.pause();
     el.removeAttribute('src');
+    el.load();
   }
-  emit({ queue: [], index: 0, playing: false, loading: false, time: 0, duration: 0 });
+  emit({ queue: [], index: 0, playing: false, loading: false, time: 0, duration: 0, error: '' });
 }
 
 function subscribe(fn: () => void): () => void {

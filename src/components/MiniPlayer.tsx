@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { next, prev, stop, toggle, usePlayer } from '../services/audioPlayer';
+import { next, prev, retry, stop, toggle, usePlayer } from '../services/audioPlayer';
 import { useI18n } from '../i18n';
 
 /** Thanh phát nhạc nổi trên TabBar — sống sót khi chuyển màn hình (nghe lúc chạy bộ). */
@@ -11,6 +11,22 @@ export default function MiniPlayer() {
   if (!track) return null;
 
   const pct = p.duration > 0 ? (p.time / p.duration) * 100 : 0;
+
+  if (p.error) {
+    return (
+      <div className="miniplayer">
+        <span className="miniplayer__title" style={{ color: 'var(--bad)' }}>
+          <span>{t('errPlayback')}</span>
+        </span>
+        <button className="btn" onClick={retry}>
+          {t('retry')}
+        </button>
+        <button onClick={stop} aria-label="✕">
+          ✕
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="miniplayer">
@@ -26,13 +42,10 @@ export default function MiniPlayer() {
       <button onClick={next} aria-label="⏭">
         ⏭
       </button>
-      <button
-        className="miniplayer__title"
-        onClick={() => navigate('/listen')}
-        title={t('listenTitle')}
-      >
+      <button className="miniplayer__title" onClick={() => navigate('/listen')} title={t('listenTitle')}>
         <span>{track.title}</span>
         <small className="text-2 tabular">
+          {p.loading ? `${t('listenLoading')} · ` : ''}
           {p.queue.length > 1 ? `${p.index + 1}/${p.queue.length} · ` : ''}
           {fmt(p.time)}
           {p.duration > 0 ? ` / ${fmt(p.duration)}` : ''}

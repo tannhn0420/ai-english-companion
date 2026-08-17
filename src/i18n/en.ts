@@ -264,6 +264,10 @@ export const en: Record<keyof typeof vi, string> = {
   syncError: 'Sync failed: {msg}',
   syncConfirmEmail: 'Check your inbox, confirm your email, then sign in again.',
 
+  // Player
+  errPlayback: "Couldn't play the audio — try another story or check your connection.",
+  retry: 'Retry',
+
   // Toasts
   toastSaved: 'Saved',
   toastDeleted: 'Deleted',

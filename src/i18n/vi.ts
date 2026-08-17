@@ -265,6 +265,10 @@ export const vi = {
   syncError: 'Đồng bộ lỗi: {msg}',
   syncConfirmEmail: 'Kiểm tra hộp thư, bấm link xác nhận, rồi quay lại đăng nhập.',
 
+  // Player
+  errPlayback: 'Không phát được audio — thử bài khác hoặc kiểm tra mạng.',
+  retry: 'Thử lại',
+
   // Toasts
   toastSaved: 'Đã lưu',
   toastDeleted: 'Đã xóa',
