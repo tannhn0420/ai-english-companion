@@ -73,6 +73,15 @@ export function fromProofread(issues: WritingIssue[], now: number): Mistake[] {
   return out;
 }
 
+/** Từ đọc sai khi luyện nói (STT không khớp) → Mistake source 'speaking'. */
+export function fromSpeaking(diff: WordDiff[], sentence: string, now: number): Mistake[] {
+  return fromDictation(diff, sentence, now).map((m) => ({
+    ...m,
+    source: 'speaking',
+    type: 'word-choice',
+  }));
+}
+
 /** Ôn lỗi = cloze đục đúng chỗ sai trong câu đúng. */
 export function toClozeCard(m: Mistake): ClozeQ | null {
   const span = (m.errorSpan || '').trim();

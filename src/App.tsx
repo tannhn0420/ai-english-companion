@@ -11,6 +11,7 @@ import DictationScreen from './screens/Dictation/DictationScreen';
 import JournalScreen from './screens/Journal/JournalScreen';
 import ListenScreen from './screens/Listen/ListenScreen';
 import MistakesScreen from './screens/Mistakes/MistakesScreen';
+import SpeakingScreen from './screens/Speaking/SpeakingScreen';
 import PracticeTopicScreen from './screens/Practice/PracticeTopicScreen';
 import ProgressScreen from './screens/Progress/ProgressScreen';
 import QuizScreen from './screens/Quiz/QuizScreen';
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="/listen" element={<ListenScreen />} />
             <Route path="/dictation" element={<DictationScreen />} />
             <Route path="/journal" element={<JournalScreen />} />
+            <Route path="/speaking" element={<SpeakingScreen />} />
             <Route path="/mistakes" element={<MistakesScreen />} />
             <Route path="/vocabtest" element={<VocabTestScreen />} />
             <Route path="/share" element={<ShareScreen />} />

@@ -115,6 +115,39 @@ export interface ProofreadResult {
   level?: string; // CEFR ước lượng của bản gốc (A1..C2)
 }
 
+// ============================================
+// Nói (Phase 7) — port từ extension
+// ============================================
+
+export interface CriterionScore {
+  band: number;
+  comment: string;
+}
+export interface SpeakingAssessment {
+  overall: number;
+  criteria: {
+    fluency: CriterionScore;
+    lexical: CriterionScore;
+    grammar: CriterionScore;
+    pronunciation: CriterionScore;
+  };
+  strengths: string[];
+  improvements: string[];
+  better: string;
+}
+
+export interface MinimalPair {
+  a: string;
+  b: string;
+  note?: string;
+}
+export interface DrillPack {
+  sound: string;
+  tip: string;
+  pairs: MinimalPair[];
+  sentences: PracticePhrase[];
+}
+
 /** Một bài nhật ký đã lưu (store `journal`). */
 export interface JournalEntry {
   id: string;

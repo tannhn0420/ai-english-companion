@@ -4,7 +4,7 @@
 > Ước lượng tính theo "buổi" làm việc tập trung (~2-3h) để dễ hình dung, không phải cam kết.
 > Ý tưởng mới KHÔNG thêm thẳng vào đây — đi qua [IDEAS.md](IDEAS.md) trước. Quyết định kiến trúc: [DECISIONS.md](DECISIONS.md).
 
-**Trạng thái hiện tại: 🚧 Phase 9 xong (Viết + Sổ tay lỗi UI) — vòng lặp học khép kín (sai ở dictation/viết → ôn lại cloze). Còn lại: Phase 7 (Speaking, M3) + Phase 10 (Conversation missions) + nợ Phase 8 (Web Push, sync extension). Tiếp theo: Phase 7 — Speaking.**
+**Trạng thái hiện tại: 🚧 Phase 7 xong (Speaking: đọc câu mẫu chấm STT, IELTS chấm qua Gemini audio, drill minimal pairs). Chỉ còn Phase 10 (Conversation missions) + nợ Phase 8 (Web Push, sync extension). Tiếp theo: Phase 10.**
 
 ## Tổng quan Milestones
 
@@ -152,11 +152,11 @@ Mục tiêu: dữ liệu vào được app — import từ extension, quản lý
 
 ## Phase 7 — Speaking (~3 buổi, rủi ro cao nhất)
 
-- [ ] `services/stt.ts`: SpeechRecognition (Chrome/Android/desktop) + capability detect.
-- [ ] Luyện đọc câu mẫu: so khớp transcript, highlight từ sai (port recordScore/recordWeakWords), chấm điểm; lỗi ghi vào `mistakes` (D12).
-- [ ] **iOS fallback**: MediaRecorder ghi âm → nghe lại; nếu có key Gemini → gửi audio cho Gemini chấm phát âm.
-- [ ] IELTS assessment: port prompt ASSESS_SPEAKING (4 tiêu chí) từ extension.
-- [ ] Pronunciation drill (minimal pairs) port GENERATE_DRILL.
+- [x] `services/stt.ts`: SpeechRecognition + `sttAvailable()` capability detect; `services/recorder.ts` MediaRecorder fallback (chọn mime theo trình duyệt).
+- [x] Luyện đọc câu mẫu (Tatoeba): STT → so khớp `gradeSentence` (dùng lại engine dictation) → highlight từ sai + điểm %; lỗi → `mistakes` source 'speaking' (D12). iOS không STT → ghi âm + nghe lại.
+- [x] **iOS/khó**: IELTS chấm từ AUDIO thật qua Gemini (`geminiAudio` — nghe được nên chấm cả phát âm), chạy cả trên iOS; không key nhưng có STT → chấm từ transcript.
+- [x] IELTS assessment: port prompt (4 tiêu chí, band 0–9) → màn hiện overall + 4 tiêu chí + điểm mạnh/cần sửa + câu mẫu Band 8+; 10 câu hỏi Part 1 tĩnh (0 token).
+- [x] Pronunciation drill: port GENERATE_DRILL → tip + 8 minimal pairs + 6 câu, mỗi mục có 🔊; 7 preset âm người Việt hay sai.
 
 **Acceptance criteria:**
 - Android: nói câu mẫu → điểm + từ sai hiển thị đúng.

@@ -19,22 +19,25 @@ function toBase64(buf: ArrayBuffer): string {
   return btoa(binary);
 }
 
-/** Tải MP3 (qua proxy cùng origin) → gửi Gemini → transcript thô. */
-export async function transcribeAudioUrl(proxiedUrl: string): Promise<string> {
+const TRANSCRIBE_PROMPT =
+  'Transcribe this English audio verbatim. Return ONLY the transcript as plain text with normal sentence punctuation — no timestamps, no speaker labels, no commentary.';
+
+/** Gọi Gemini với 1 phần audio inline + prompt. Trả text. Chung cho transcript & chấm nói. */
+export async function geminiAudio(
+  bytes: ArrayBuffer,
+  mime: string,
+  prompt: string,
+  opts?: { temperature?: number; maxOutputTokens?: number },
+): Promise<string> {
   const s = getSettings();
   if (s.aiProvider !== 'gemini') {
-    throw new Error('Tạo transcript từ audio cần provider Gemini (đổi trong Cài đặt → AI).');
+    throw new Error('Tính năng này cần provider Gemini (đổi trong Cài đặt → AI).');
   }
   const key = s.aiKey.trim();
   if (!key) throw new Error('Chưa có API key — vào Cài đặt → AI.');
-
-  const res = await fetch(proxiedUrl);
-  if (!res.ok) throw new Error('Không tải được audio để tạo transcript.');
-  const buf = await res.arrayBuffer();
-  if (buf.byteLength > MAX_BYTES) {
-    throw new Error('Audio quá dài để tạo transcript — thử một bài ngắn hơn.');
+  if (bytes.byteLength > MAX_BYTES) {
+    throw new Error('Audio quá dài — thử đoạn ngắn hơn.');
   }
-
   const model = s.aiModel.trim() || 'gemini-flash-latest';
   const r = await fetch(`${GEMINI_API_URL}/${model}:generateContent?key=${key}`, {
     method: 'POST',
@@ -42,25 +45,33 @@ export async function transcribeAudioUrl(proxiedUrl: string): Promise<string> {
     body: JSON.stringify({
       contents: [
         {
-          parts: [
-            {
-              text: 'Transcribe this English audio verbatim. Return ONLY the transcript as plain text with normal sentence punctuation — no timestamps, no speaker labels, no commentary.',
-            },
-            { inline_data: { mime_type: 'audio/mpeg', data: toBase64(buf) } },
-          ],
+          parts: [{ text: prompt }, { inline_data: { mime_type: mime, data: toBase64(bytes) } }],
         },
       ],
-      generationConfig: { temperature: 0, maxOutputTokens: 8192 },
+      generationConfig: {
+        temperature: opts?.temperature ?? 0,
+        maxOutputTokens: opts?.maxOutputTokens ?? 8192,
+      },
     }),
   });
   if (!r.ok) {
     if (r.status === 429) throw new Error('Vượt giới hạn API — chờ chút rồi thử lại.');
-    throw new Error(`Lỗi tạo transcript (HTTP ${r.status}).`);
+    throw new Error(`Lỗi Gemini audio (HTTP ${r.status}).`);
   }
-  const data = (await r.json()) as {
-    candidates?: { content?: { parts?: { text?: string }[] } }[];
-  };
+  const data = (await r.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
   const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('').trim() || '';
-  if (!text) throw new Error('AI không tạo được transcript — thử lại nhé.');
+  if (!text) throw new Error('AI không trả kết quả — thử lại nhé.');
   return text;
+}
+
+/** Tải MP3 (qua proxy cùng origin) → gửi Gemini → transcript thô. */
+export async function transcribeAudioUrl(proxiedUrl: string): Promise<string> {
+  const res = await fetch(proxiedUrl);
+  if (!res.ok) throw new Error('Không tải được audio để tạo transcript.');
+  return geminiAudio(await res.arrayBuffer(), 'audio/mpeg', TRANSCRIBE_PROMPT);
+}
+
+/** Transcript từ blob ghi âm (mic) — dùng cho luyện nói trên iOS (không STT). */
+export async function transcribeBlob(blob: Blob): Promise<string> {
+  return geminiAudio(await blob.arrayBuffer(), blob.type || 'audio/webm', TRANSCRIBE_PROMPT);
 }
